@@ -1,4 +1,0 @@
-"""
-__auther__ = wangjiawei
-
-"""
