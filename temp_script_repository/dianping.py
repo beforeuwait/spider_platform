@@ -11,10 +11,11 @@ __author__ = wangjiawei
 目前的思路是，脚本库的脚本需要提供：
 1. 对应网站的解析规则
 2. 该url的请求方式，包括请求头的设置
+
+现在将这个脚本视为放在mongo中
 ***
 """
 
-import json
 
 DIANPING = {
     'shop_list': {
@@ -44,18 +45,3 @@ DIANPING = {
     'shop_cmt': {}
 }
 
-
-def load_project_parse_2_json(project):
-    """
-    json格式传递参数
-    :param project:项目名称
-    :return: json格式字符串
-    """
-    json_dict = {}
-    if project == 'dianping':
-        json_dict = DIANPING
-    return json.dumps(json_dict)
-
-if __name__ == '__main__':
-    json_str = load_project_parse_2_json('dianping')
-    print(json_str)
