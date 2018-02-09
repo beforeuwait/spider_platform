@@ -1,3 +1,4 @@
+# coding=utf8
 """
 __auther__ = wangjiawei
 作为脚本库的测试版本
@@ -6,3 +7,4 @@ __auther__ = wangjiawei
 
 --测试脚本，大众点评"吃住行游购娱"
 """
+
