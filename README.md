@@ -24,5 +24,11 @@
 
 2018/02/09 开始项目
 
+* 代码库：主要作为存放对应脚本的解析规则和请求方式
+
+* 代码形式？ dict形式以json传递？slave又如何调用？
+
+* 放在哪？本地写一个包？还是放介质里
+
 
 [1]:https://github.com/beforeuwait/spider_platform/blob/master/%E5%B9%B3%E5%8F%B0%E6%A1%86%E6%9E%B6.png?raw=true
