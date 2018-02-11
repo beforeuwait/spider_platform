@@ -11,7 +11,7 @@ __version__ = 0.1
 """
 
 import json
-from temp_script_repository.dianping import DIANPING
+from temp_script_repository.script import DIANPING
 
 def load_project_parse_2_json(project):
     """

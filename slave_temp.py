@@ -7,6 +7,8 @@ __author__ = 'wangjaiwei'
 
 获取脚本，这里通过读取的操作
 执行脚本，
+
+
 """
 
 import os
