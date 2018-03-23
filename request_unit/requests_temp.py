@@ -1,6 +1,8 @@
 # coding=utf8
 from __future__ import absolute_import
+
 __author__ = 'wangjiawei'
+__version__ = '0.1'
 
 """
 先开发，暂不优化
@@ -8,19 +10,53 @@ __author__ = 'wangjiawei'
 2018-02-26 各模块编写
 2018-03-05 继续编写模块
 2018-03-06 编辑模块， 关于 headers中referer的带法是个难题
+2018-03-08 预期今天完成0.1版本开发
+2018-03-12 预期需要一个 TODO
 """
 import requests
 from faker import Faker
 # from request_unit.deal_error import
 
 
+# TODO 主逻辑模块， 03-12开发
+
 class RequestMainModel(object):
+
     """作为请求模块的的父类
     主逻辑模块，调度headers cookie等各模块的逻辑
     从request_api 获取任务，然后执行相应的逻辑
     """
-    def __init__(self):
-        pass
+
+    def normal_main(self):
+        """
+        这个作为通用请求模块主逻辑的主模块
+        在没有出现新的逻辑部分
+        讲使用该方法作为主逻辑
+        :return:
+        """
+        test_data1 = {
+            'method': 'GET',
+            'domain': 'baidu',
+            'data_type': 'str',
+            'multi_ua': 'yes',
+            'headers': '',
+            'referer': '',
+            'url': 'http://www.baidu.com',
+            'params': '',
+            'payloads': '',
+            'payloads_type': 'str',
+            'html': '',
+            'status_code': '',
+            'error_info': '',
+            'cookie_info': 'baidu_tieba',
+        }
+        h_api = HeadersAPI()
+        r_api = RequestsAPI()
+        headers = h_api.headers_api(domain=test_data1.get('domain'), data_type=test_data1.get('data_type'))
+        test_data1['headers'] = headers
+        result = r_api.request_api(test_data1)
+        # todo:需要解决的事status_code的问题,来判断执行主逻辑
+        print(result)
 
 class HeadersAPI(object):
     """作为请求头处理的模块
@@ -35,11 +71,11 @@ class HeadersAPI(object):
         :return:
         """
         headers = {}
-        headers = self._headers_engine(kwargs.get('domain'), kwargs.get('data_type'))
+        headers = self._headers_engine(kwargs.get('domain'), kwargs.get('data_type'), kwargs.get('multi_ua'))
         # 也可以先返回一个dict再去封装，减少内存的利用
         return headers
 
-    def _headers_engine(self, domain, data_type):
+    def _headers_engine(self, domain, data_type, multi_ua):
         """headers引擎，作用是封装好一个可提供给爬虫执行的headers
         :param domain:
         :return:
@@ -71,7 +107,8 @@ class HeadersAPI(object):
         # 3. 定制请求头,针对不同的网站，定制不同的头
 
         # 4. 是否需要多个UA
-        headers['User-Agent'] = self._ua_maker()
+        if multi_ua == 'yes':
+            headers['User-Agent'] = self._ua_maker()
         return headers
 
     def _base_headers(self):
@@ -133,6 +170,8 @@ class HeadersAPI(object):
             'Accept': 'application/json, text/javascript',
             'X-Request': 'JSON',
             'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) '
+                           'Chrome/64.0.3282.186 Safari/537.36'),
         }
         return json_headers
 
@@ -224,7 +263,7 @@ class RequestsAPI(CookieAPI, StatusCodeHandle, ErrorHandlerAPI):
         # for k, v in data.items():
         #     print(k, v)
         result = self._request_engine(data)
-        # return result
+        return result
 
     def _request_engine(self, data):
         """request引擎
@@ -242,7 +281,7 @@ class RequestsAPI(CookieAPI, StatusCodeHandle, ErrorHandlerAPI):
             data = self._get_method(data)
         elif method == 'POST':
             # post请求的处理逻辑
-            pass
+            data = self._post_method(data)
         else:
             # 针对 option/put/delete的处理逻辑
             pass
@@ -285,56 +324,83 @@ class RequestsAPI(CookieAPI, StatusCodeHandle, ErrorHandlerAPI):
         data['cookies'] = response.cookies
         return data
 
-    def _post_method(self):
+    def _post_method(self, data):
         """POST请求模块
+        因为继承自 cookie ，status， error模块，这里就要有相应的cookie处理，反馈机制的status处理机制
         :return:
         """
-        pass
+        # cookie 的 switch
+        cookies = {}
+        if not data.get('cookie_info', '') == '':
+            # 需要装载cookie
+            cookies = self.cookie_switch(data.get('cookie_info'))
+        # 涉及到，这个payloads 是str 还是 {} 还是 json
+        # 选择器
 
+        # 带参数和不带参数的处理方法
+        if not cookies == {}:
+            response = requests.post(data.get('url'), headers=data.get('headers'), data=data.get('payloads'))
+        else:
+            response = requests.post(data.get('url'), headers=data.get('headers'), cookies=cookies, data=data.get('payloads'))
+        try:
+            data['html'] = response.content.decode('utf8')
+        except:
+            # 编码出错的情况下
+            data['html'] = response.content.decode('gbk')
+        # 开始对status_code 处理， 这里的原则就是，200 通过，300无视，400/500处理
+        data['status_code'] = response.status_code
+        data['cookies'] = response.cookies
+        return data
+
+# TODO 03-12 模块，需要编写开发
 
 class RequestModelAPI(object):
     """向外部提供的一个api,作为对这个模块的条用，接收参数，预处理
     1. 判断是什么请求
     2. 处理参数 不仅是 params和payloads
-
+    3. 对于处理调用main model
     """
     pass
 
 if __name__ == '__main__':
-    test_data1 = {
-        'method': 'GET',
-        'domain': 'baidu',
-        'data_type': 'json',
-        'multi_ua': 'yes',
-        'headers': '',
-        'referer': '',
-        'url': 'http://www.baidu.com',
-        'params': '',
-        'payloads': '',
-        'html': '',
-        'status_code': '',
-        'error_info': '',
-        'cookie_info': 'baidu_tieba',
-    }
-    test_data2 = {
-        'method': 'POST',
-        'headers': '',
-        'domain': 'baidu',
-        'data_type': 'str',
-        'multi_ua': 'yes',
-        'referer': '',
-        'params': '',
-        'payloads': '',
-        'url': 'http://www.baidu.com',
-        'html': '',
-        'status_code': '',
-        'cookie_info': 'baidu_tieba'
-    }
-    baidu_headers = {}
-    h_api = HeadersAPI()
-    r_api = RequestsAPI()
-    headers = h_api.headers_api(domain=test_data1.get('domain'), data_type=test_data1.get('data_type'))
-    test_data1['headers'] = headers
-    result = r_api.request_api(test_data1)
-    print(result)
+    rqm = RequestMainModel()
+    rqm.normal_main()
+    # test_data1 = {
+    #     'method': 'GET',
+    #     'domain': 'baidu',
+    #     'data_type': 'str',
+    #     'multi_ua': 'yes',
+    #     'headers': '',
+    #     'referer': '',
+    #     'url': 'http://www.baidu.com',
+    #     'params': '',
+    #     'payloads': '',
+    #     'payloads_type': 'str',
+    #     'html': '',
+    #     'status_code': '',
+    #     'error_info': '',
+    #     'cookie_info': 'baidu_tieba',
+    # }
+    # test_data2 = {
+    #     'method': 'POST',
+    #     'headers': '',
+    #     'domain': 'baidu',
+    #     'data_type': 'str',
+    #     'multi_ua': 'yes',
+    #     'referer': '',
+    #     'params': '',
+    #     'payloads': '',
+    #     'payloads_type': 'str',
+    #     'url': 'http://www.baidu.com',
+    #     'html': '',
+    #     'status_code': '',
+    #     'cookie_info': 'baidu_tieba'
+    # }
+    # baidu_headers = {}
+    # h_api = HeadersAPI()
+    # r_api = RequestsAPI()
+    # headers = h_api.headers_api(domain=test_data1.get('domain'), data_type=test_data1.get('data_type'))
+    # test_data1['headers'] = headers
+    # result = r_api.request_api(test_data1)
+    # print(result)
     # print(test_data1)
