@@ -28,9 +28,9 @@ headers = {
 
 host = 'sec-m.ctrip.com'
 path = '/restapi/soa2/12530/json/scenicSpotDescription'
-payloads = b'{"viewid": 1412255,"retype": 1,"searchtype": 1,"pageid": 238013,"ver": "7.10.1.0131180001","head": {"cid": "09031027110141432611","ctok": "","cver": "1.0","lang": "01","sid": "8888","syscode": "09","auth": "null","extension": [{"name": "protocal","value": "https"}]},"contentType": "json"}'
+payloads = {"viewid": 1412255,"retype": 1,"searchtype": 1,"pageid": 238013,"ver": "7.10.1.0131180001","head": {"cid": "09031027110141432611","ctok": "","cver": "1.0","lang": "01","sid": "8888","syscode": "09","auth": "null","extension": [{"name": "protocal","value": "https"}]},"contentType": "json"}
 client = HTTPConnection(host)
-a = client.request('POST', path, headers=headers, body=payloads)
+a = client.request('POST', path, headers=headers, body=json.dumps(payloads).encode())
 print(a)
 resp = client.get_response()
 
