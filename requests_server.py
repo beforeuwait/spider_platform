@@ -79,7 +79,7 @@ class GeneralRequestServer():
         return html
 
     def request_api(self, **kwargs):
-        """获取外部调用，解析出url，headers，params等等
+        """作为api，接收参数如 url, headers, cookies, params, payloads
 
         **目前是简版**
         """
@@ -88,7 +88,6 @@ class GeneralRequestServer():
         method = kwargs.get('method')
         payloads = kwargs.get('payloads', {})
         params = kwargs.get('params', {})
-        payloads_type = kwargs.get('payloads_type', 'dict')
         if method == 'GET':
             # 这是个get请求
             html = self.__circle_request(url, params)
@@ -100,13 +99,13 @@ class GeneralRequestServer():
             html = ''
         return html
 
-    def __update_headers(self, headers):
+    def update_headers(self, headers):
 
         self.__session.headers.update(headers)
 
         return
 
-    def __update_cookie(self):
+    def update_cookie(self):
         """更新cookie"""
 
         try:
@@ -115,24 +114,23 @@ class GeneralRequestServer():
             cf.logger.warning('cookie更新失败, 说明当前请求无效\t {0}'.format(e))
         return
 
-    def __update_other_cookie(self, cookie):
+    def update_outer_cookie(self, cookie):
         try:
             self.__session.cookies.update(cookie)
         except:
             cf.logger.warning('外部cookie更新无效')
 
-    def __close_session(self):
+    def close_session(self):
         """关闭session"""
+        
         self.__session.close()
+
         return
 
-    def __delete_cookie(self):
+    def delete_cookie(self):
         """删除cookie"""
 
-        try:
-            del self.__session.cookies
-        except:
-            pass
+        self.__session.cookies.clear()
 
         return
 
