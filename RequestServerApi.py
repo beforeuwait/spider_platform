@@ -48,9 +48,7 @@ class GeneralRequest():
         首先是判断是否有参数
         默认是不允许跳转的
         """
-        response = self.s.get(url, params=params, allow_redirects=False) \
-                        if params is not None \
-                        else self.s.get(url, allow_redirects=False)
+        response = self.s.get(url, params=params, allow_redirects=False) if params is not None else self.s.get(url, allow_redirects=False)
         return response
 
     def POST_request(self, url, payloads):
@@ -133,11 +131,9 @@ class GeneralRequest():
 
     def do_request(self, url, method, params, payloads):
         """根据指定的请求方式去请求"""
-
         retry = scf.retry
         html = 'null_html'
         while retry > 0:
-            print(retry)
             response = None
             try:
                 # TODO 选择执行的方式
@@ -229,7 +225,8 @@ class RequestAPI(GeneralRequest):
         都这这里自己定义
         """
         pass
-    
+
+
 
 def temp_test_unit():
     """测试该库
@@ -251,7 +248,7 @@ def temp_test_unit():
             "Upgrade-Insecure-Requests": "1"
         }
     api = RequestAPI()
-    html = api.receive_and_request(url=url, headers=headers, method='POST', payloads={'a': 'b'})
+    html = api.receive_and_request(url=url, headers=headers, method='GET')
     print(html)
 
 
