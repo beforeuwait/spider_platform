@@ -133,9 +133,11 @@ class GeneralRequest():
 
     def do_request(self, url, method, params, payloads):
         """根据指定的请求方式去请求"""
+
         retry = scf.retry
         html = 'null_html'
         while retry > 0:
+            print(retry)
             response = None
             try:
                 # TODO 选择执行的方式
@@ -153,6 +155,9 @@ class GeneralRequest():
     
             status_code = response.status_code
             is_go_on = self.deal_status_code(status_code)
+
+            # 更新cookie
+            self.update_cookie_with_response(response)
             if is_go_on:
                 # 返回html
                 try:
@@ -198,16 +203,17 @@ class RequestAPI(GeneralRequest):
         
         # 先获取参数， 目前就想了这么多
         url = kwargs.get('url')
-        method = kwargs.get('method')
         headers = kwargs.get('headers')
+        method = kwargs.get('method')
         cookie = kwargs.get('cookie')
         params = kwargs.get('params')
         payloads = kwargs.get('payloads')
-
-        # 根据获取的参数，组装请求头
+        
+        # 构建请求头
         self.update_headers(headers)
         if cookie is not None:
             self.update_cookie_with_outer(cookie)
+
         # 开始请求
         html = self.do_request(url=url,
                                 params=params, 
@@ -223,3 +229,31 @@ class RequestAPI(GeneralRequest):
         都这这里自己定义
         """
         pass
+    
+
+def temp_test_unit():
+    """测试该库
+    
+    test_1: 
+        url = 'http://www.baidu.com'
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+            "Host": "www.baidu.com",
+            "Upgrade-Insecure-Requests": "1"
+        }
+    
+
+    """
+    url = 'http://www.baidu.com'
+    headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+            "Host": "www.baidu.com",
+            "Upgrade-Insecure-Requests": "1"
+        }
+    api = RequestAPI()
+    html = api.receive_and_request(url=url, headers=headers, method='POST', payloads={'a': 'b'})
+    print(html)
+
+
+if __name__ == '__main__':
+    temp_test_unit()
