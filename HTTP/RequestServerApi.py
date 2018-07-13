@@ -10,7 +10,7 @@
     3. test_unit
 """
 import requests
-import requests_server_config as scf
+import HTTP.requests_server_config as scf
 
 
 class GeneralRequest():
