@@ -139,6 +139,7 @@ class GeneralRequest():
         html = 'null_html'
         while retry > 0:
             response = None
+            is_go_on = False
             try:
                 # TODO 选择执行的方式
                 if method == 'GET':
@@ -152,9 +153,9 @@ class GeneralRequest():
                 logger.info('请求出错, 错误原因:', exc_info=True, extra=filter_dict)
             
             # 拿到response后，处理 
-    
-            status_code = response.status_code
-            is_go_on = self.deal_status_code(status_code)
+            if response is not None:
+                status_code = response.status_code
+                is_go_on = self.deal_status_code(status_code)
 
             # 更新cookie
             self.update_cookie_with_response(response)
@@ -166,6 +167,7 @@ class GeneralRequest():
                     html = response.text
                 break
             retry -= 1
+
         return html 
             
 
