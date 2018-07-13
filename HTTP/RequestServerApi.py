@@ -148,7 +148,7 @@ class GeneralRequest():
                 elif method == 'POST':
 
                     response = self.POST_request(url, payloads)                 
-            except Exception as e:
+            except:
                 # 输出log, 这里的错误都是网络上的错误
                 logger.info('请求出错, 错误原因:', exc_info=True, extra=filter_dict)
             
