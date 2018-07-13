@@ -10,8 +10,8 @@
     3. test_unit
 """
 import requests
-import HTTP.requests_server_config as scf
-from HTTP.requests_server_config import logger, filter_dict
+import requests_server_config as scf
+from requests_server_config import logger, filter_dict
 
 
 class GeneralRequest():
