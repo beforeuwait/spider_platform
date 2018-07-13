@@ -20,7 +20,7 @@ os.chdir(os.path.split(os.path.abspath(__file__))[0])
 # 请求模块日志
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.INFO)   # 定义为INFO是因为requests要写debug
+logger.setLevel(logging.DEBUG)   # 定义为INFO是因为requests要写debug
 request_handler = logging.FileHandler('http_server_log.log')
 fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 request_handler.setFormatter(fmt)

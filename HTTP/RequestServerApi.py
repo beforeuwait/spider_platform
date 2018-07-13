@@ -11,7 +11,7 @@
 """
 import requests
 import HTTP.requests_server_config as scf
-from HTTP.requests_server_config import logger
+from HTTP.requests_server_config import logger, filter_dict
 
 
 class GeneralRequest():
@@ -84,7 +84,7 @@ class GeneralRequest():
             self.s.cookies.update(response.cookie)
         except:
             # TODO 这里做一个日志输出
-            logger.info("response更新cookie数据失败,可能请求失败")
+            logger.info("response更新cookie数据失败,可能请求失败", extra=filter_dict)
     
     def update_cookie_with_outer(self, cookies):
         """通过外部加载去更新cookie
@@ -149,7 +149,7 @@ class GeneralRequest():
                     response = self.POST_request(url, payloads)                 
             except Exception as e:
                 # 输出log, 这里的错误都是网络上的错误
-                pass
+                logger.info('请求出错, 错误原因:', exc_info=True, extra=filter_dict)
             
             # 拿到response后，处理 
     
@@ -180,7 +180,8 @@ class GeneralRequest():
         result = True
         if status_code >= 300 or status_code == 203:
             result = False
-        # TODO: 添加logging
+            # TODO: 添加logging
+            logger.info('请求出现状态码异常:\t{0}'.format(status_code), extra=filter_dict)
         return result
 
         
