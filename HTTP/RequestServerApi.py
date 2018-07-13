@@ -11,6 +11,7 @@
 """
 import requests
 import HTTP.requests_server_config as scf
+from HTTP.requests_server_config import logger
 
 
 class GeneralRequest():
@@ -48,7 +49,10 @@ class GeneralRequest():
         首先是判断是否有参数
         默认是不允许跳转的
         """
-        response = self.s.get(url, params=params, allow_redirects=False) if params is not None else self.s.get(url, allow_redirects=False)
+        response = self.s.get(url, params=params, allow_redirects=False) \
+                    if params is not None \
+                    else self.s.get(url, allow_redirects=False)
+
         return response
 
     def POST_request(self, url, payloads):
@@ -80,7 +84,7 @@ class GeneralRequest():
             self.s.cookies.update(response.cookie)
         except:
             # TODO 这里做一个日志输出
-            pass
+            logger.info("response更新cookie数据失败,可能请求失败")
     
     def update_cookie_with_outer(self, cookies):
         """通过外部加载去更新cookie

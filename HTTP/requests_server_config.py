@@ -18,15 +18,34 @@ import logging
 os.chdir(os.path.split(os.path.abspath(__file__))[0])
 
 # 请求模块日志
-logging.basicConfig(level=logging.INFO,   # requests库会自动写入debug,故将level设置为 INFO
-                    filename='requests_server.log',
-                    datefmt='%Y/%m%d %H:%M:%S',
-                    format='%(asctime)s - %(levelname)s - %(message)s')
-
 logger = logging.getLogger(__name__)
 
+logger.setLevel(logging.INFO)   # 定义为INFO是因为requests要写debug
+request_handler = logging.FileHandler('http_server_log.log')
+fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+request_handler.setFormatter(fmt)
+logger.addHandler(request_handler)
 
+# 定义个过滤器
+class RequestFilter(logging.Filter):
+    """这是一个过滤request_log的过滤器
+    """
 
+    def filter(self, record):
+        result = True
+        try:
+            filter_key = record.isRequest
+        except AttributeError:
+            result = False
+
+        if filter_key == 'notRequestLog':
+            result = True
+        return result
+
+reqfilter = RequestFilter()
+logger.addFilter(reqfilter)
+
+filter_dict = {"isRequest": "notRequestLog"}
 
 # 代理
 
