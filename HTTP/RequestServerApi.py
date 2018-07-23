@@ -72,7 +72,7 @@ class GeneralRequest():
         """
         pass
     
-    def update_cookie_with_response(self, response):
+    def update_cookie_with_response(self, cookie):
         """通过response这个对象去更新cookie
 
         **这里一个强制性的要求就是，请求后，更新cookie**
@@ -81,7 +81,7 @@ class GeneralRequest():
         更新cookie时候会报错，这里需要一个错误提示
         """
         try:
-            self.s.cookies.update(response.cookie)
+            self.s.cookies.update(cookie)
         except:
             # TODO 这里做一个日志输出
             logger.info("response更新cookie数据失败,可能请求失败", extra=filter_dict)
@@ -157,8 +157,9 @@ class GeneralRequest():
                 status_code = response.status_code
                 is_go_on = self.deal_status_code(status_code)
 
-            # 更新cookie
-            self.update_cookie_with_response(response)
+                # 更新cookie
+                self.update_cookie_with_response(response.cookies)
+
             if is_go_on:
                 # 返回html
                 try:

@@ -36,7 +36,7 @@ class RequestFilter(logging.Filter):
         try:
             filter_key = record.isRequest
         except AttributeError:
-            result = False
+            filter_key = 'error_record'
 
         if filter_key == 'notRequestLog':
             result = True
