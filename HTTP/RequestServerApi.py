@@ -188,7 +188,6 @@ class GeneralRequest():
         return result
 
         
-
 class RequestAPI(GeneralRequest):
     """这个类作为外部调用的api
     功能：
