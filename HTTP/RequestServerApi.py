@@ -213,7 +213,7 @@ class RequestAPI(GeneralRequest):
         
         # 先获取参数， 目前就想了这么多
         url = kwargs.get('url')
-        headers = kwargs.get('headers')
+        headers = kwargs.get('sheaders')
         method = kwargs.get('method')
         cookie = kwargs.get('cookie')
         params = kwargs.get('params')

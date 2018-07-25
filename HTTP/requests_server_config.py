@@ -51,7 +51,7 @@ filter_dict = {"isRequest": "notRequestLog"}
 
 proxy = {
         "http": "http://HUICU80ZV6SK58WP:21CE6FB2A2AE49B@proxy.abuyun.com:9010",
-        "https": "http://HUICU80ZV6SK58WP:21CE6FB2A2AE49B@proxy.abuyun.com:9010",
+        "https": "http://HUICU80ZV6SK58WP:21CE6FB2A2AE49Bs@proxy.abuyun.com:9010",
     }
 
 # 重试次数我
