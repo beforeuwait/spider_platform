@@ -118,6 +118,13 @@ class GeneralRequest():
         self.s.proxies.update(proxy)
         return
     
+    def delete_proxy(self):
+        """针对需要本地请求，
+        删除proxy
+        """
+        self.s.proxies.clear
+        return
+    
     def discard_proxy(self):
         """因为在默认的状态下，session是携带proxy了的
         该function就是在当前实例中取消代理
@@ -234,9 +241,9 @@ class RequestAPI(GeneralRequest):
         pass
 
 
-
+"""
 def temp_test_unit():
-    """测试该库
+    \"""测试该库
     
     test_1: 
         url = 'http://www.baidu.com'
@@ -247,7 +254,7 @@ def temp_test_unit():
         }
     
 
-    """
+    \"""
     url = 'http://www.baidu.com'
     headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
@@ -261,3 +268,4 @@ def temp_test_unit():
 
 if __name__ == '__main__':
     temp_test_unit()
+"""
