@@ -32,7 +32,7 @@ class RequestFilter(logging.Filter):
     """
 
     def filter(self, record):
-        result = True
+        result = False
         try:
             filter_key = record.isRequest
         except AttributeError:
