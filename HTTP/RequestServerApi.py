@@ -8,6 +8,8 @@
     1. GeneralRequest
     2. RequestAPI
     3. test_unit
+
+    # updatetime: 2018/08/07    添加selenium 模块，驱动firefox (个人感觉firefox稳定些)
 """
 import requests
 import HTTP.requests_server_config as scf
