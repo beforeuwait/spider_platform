@@ -10,6 +10,10 @@
     3. test_unit
 
     # updatetime: 2018/08/07    添加selenium 模块，驱动firefox (个人感觉firefox稳定些)
+    # 提供思路: 2018/08/15
+    # 1. 支持app抓取，比如 appium
+    # 2. 提供http/2的扩展, 熟读hyper谢谢
+    # 3. 针对比如淘宝对selenium的封杀，熟读selenium底层
 """
 import requests
 import HTTP.requests_server_config as scf
