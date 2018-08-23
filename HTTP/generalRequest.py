@@ -37,6 +37,7 @@ class GeneralRequest():
     def __init__(self):
         # 初始化的时候就创建session,并带上proxy
         self.s = self.establish_session()
+        # 默认是带了代理的
         self.update_proxy()
     
     def establish_session(self):
@@ -67,6 +68,7 @@ class GeneralRequest():
         response = self.s.get(url, params=params, allow_redirects=False) \
                     if params is not None \
                     else self.s.get(url, allow_redirects=False)
+        # 带参和不带参的处理放到请求发起的地方，这个函数就是纯粹的发起一次请求而已
         """
         response = self.s.get(url, allow_redirects=False)
 
