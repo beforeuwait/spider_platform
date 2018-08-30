@@ -70,7 +70,7 @@ class GeneralRequest():
                     else self.s.get(url, allow_redirects=False)
         # 带参和不带参的处理放到请求发起的地方，这个函数就是纯粹的发起一次请求而已
         """
-        response = self.s.get(url, allow_redirects=False)
+        response = self.s.get(url, allow_redirects=False, timeout=30)
 
         return response
 
@@ -80,7 +80,7 @@ class GeneralRequest():
         默认是不允许跳转的
         """
 
-        response = self.s.post(url, data=payloads)
+        response = self.s.post(url, data=payloads, timeout=30)
 
         return response
     
