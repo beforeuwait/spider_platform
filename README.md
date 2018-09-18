@@ -39,10 +39,21 @@
 
 ![总流程图][1]
 
+可以看出，每一个Agent节点作为一个MsgCenter，肩负
+
+- 启动进程
+- 通信
+- 类似路由查询的作用
+
+## 消息框架设计
+
+![消息框架设计][3]
 
 
 
 
 [1]: https://github.com/beforeuwait/spider_platform/blob/master/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/%E6%8A%93%E5%8F%96%E5%B9%B3%E5%8F%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg?raw=true
 
-[2]: https://github.com/beforeuwait/spider_platform/blob/master/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/%E6%8A%93%E5%8F%96%E5%B9%B3%E5%8F%B0%E6%80%BB%E8%AE%BE%E8%AE%A1%E5%9B%BE09-12.jpg?raw=true
+[2]: https://github.com/beforeuwait/spider_platform/blob/master/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/%E6%8A%93%E5%8F%96%E5%B9%B3%E5%8F%B0%E6%B5%81%E7%A8%8B%E5%9B%BE09-18.jpg?raw=true
+
+[3]: https://github.com/beforeuwait/spider_platform/blob/master/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E6%A1%86%E6%9E%B6.jpg?raw=true
