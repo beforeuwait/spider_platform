@@ -49,7 +49,7 @@ class GeneralRequest():
         """
         return requests.Session()
     
-    def cloes_session(self):
+    def close_session(self):
         """关闭session
 
         针对页面跳转，会出现打开新的session，
