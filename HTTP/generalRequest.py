@@ -4,11 +4,6 @@
     author: wangjiawei
     date: 2018/07/09
 
-    TODO LIST:
-    1. GeneralRequest
-    2. RequestAPI
-    3. test_unit
-
     #############################################################################
     # updatetime: 2018/08/07    添加selenium 模块，驱动firefox (个人感觉firefox稳定些)
     # 提供思路: 2018/08/15
@@ -21,11 +16,17 @@
     新的思路，
     保持程序的蠢
     error应该抛出交给上层去处理
+    #############################################################################
+    # updatetime: 2018/09/21
+    简单的修改了下代码
+    引入一个参数验证
+    至于如何处理，还没想好
 
 """
 import requests
 import HTTP.requests_server_config as scf
 from HTTP.requests_server_config import logger, filter_dict
+from HTTP.Utils import check_params
 
 
 class GeneralRequest():
@@ -100,19 +101,28 @@ class GeneralRequest():
         更新cookie时候会报错，这里需要一个错误提示
         """
         try:
-            self.s.cookies.update(cookie)
-        except:
+            check_params(cookie)
+        except Exception as e:
             # TODO 这里做一个日志输出
-            logger.info("response更新cookie数据失败,可能请求失败", extra=filter_dict)
-    
-    def update_cookie_with_outer(self, cookies):
+            logger.info("response更新cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+        
+        # cookie验证通过后，再更新cookie
+        self.s.cookies.update(cookie)
+        
+    def update_cookie_with_outer(self, outer_cookie):
         """通过外部加载去更新cookie
         通常使用场景
         1. 带cookie绕过服务器验证
         2. 带cookie模仿用户去请求数据
         """
-
-        self.s.cookies.update(cookies)
+        try:
+            check_params(outer_cookie)
+        except Exception as e:
+            # TODO 这里做一个日志输出
+            logger.info("session更新外部cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+        
+        # cookie验证通过后，再更新cookie        
+        self.s.cookies.update(outer_cookie)
         return
 
     
@@ -124,7 +134,12 @@ class GeneralRequest():
 
         执行之前应该先把其session.headers.clear()
         """
-
+        try:
+            check_params(params)
+        except Exception as e:
+            # TODO 这里做一个日志输出
+            logger.info("session更新headers数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+        
         self.s.headers.clear()
         self.s.headers.update(params)
         return
@@ -164,6 +179,7 @@ class GeneralRequest():
         将get请求的参数封装在这
         先判断params是否为空
         """
+
         if params is not None:
             self.s.params.update(params)
         return
@@ -189,6 +205,7 @@ class GeneralRequest():
     def do_request(self, url, method, params, payloads):
         """根据指定的请求方式去请求"""
         retry = scf.retry
+        # 有的网页直接反空，不建议用空，不好去分析原因,
         html = 'null_html'
         while retry > 0:
             response = None
@@ -208,25 +225,23 @@ class GeneralRequest():
                 # 输出log, 这里的错误都是网络上的错误
                 # logger.info('请求出错, 错误原因:', exc_info=True, extra=filter_dict)
                 logger.info('请求出错, 错误原因:\t{0}'.format(e), extra=filter_dict)
-                retry -= 1
-            
-            # 拿到response后，处理 
-            if response is not None:
+                
+            else:
+                # 拿到response后，处理 
                 status_code = response.status_code
                 is_go_on = self.deal_status_code(status_code)
 
                 # 更新cookie
                 self.update_cookie_with_response(response.cookies)
+                if is_go_on:
+                    # 返回html
 
-            if is_go_on:
-                # 返回html
-                try:
-                    html = response.content.decode(scf.ec_u)
-                except:
-                    html = response.text
-                break
+                    try:
+                        html = response.content.decode(scf.ec_u)
+                    except:
+                        html = response.text
+                    break
             retry -= 1
-
         return html 
             
 
@@ -238,11 +253,19 @@ class GeneralRequest():
         4xx: 客户端错误
         5xx: 服务器错误
         """
+        
+        """
+        # 针对爪子的策略，这个模块一样可以复写
         result = True
         if status_code >= 300 or status_code == 203:
             result = False
             # TODO: 添加logging
             logger.info('请求出现状态码异常:\t{0}'.format(status_code), extra=filter_dict)
         return result
-
- 
+        """
+        resule = True
+        if status_code >= 300:
+            resule = False
+            # 同时添加log
+            logger.info('请求出现状态码异常:\t{0}'.format(status_code), extra=filter_dict)
+        return resule

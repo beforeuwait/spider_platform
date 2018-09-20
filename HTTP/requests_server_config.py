@@ -15,7 +15,7 @@ from __future__ import absolute_import
 import os
 import logging
 
-os.chdir(os.path.split(os.path.abspath(__file__))[0])
+# os.chdir(os.path.split(os.path.abspath(__file__))[0])
 
 # 请求模块日志
 logger = logging.getLogger(__name__)
