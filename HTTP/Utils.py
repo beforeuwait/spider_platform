@@ -17,6 +17,3 @@ class InputParamsError(Exception):
     
     def __str__(self):
         return '当前传入参数不是dict格式，请检查...'
-
-if __name__ == '__main__':
-    check_params([1,2,3])
