@@ -18,10 +18,10 @@ import logging
 # os.chdir(os.path.split(os.path.abspath(__file__))[0])
 
 # 请求模块日志
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(name='request_log')
 
 logger.setLevel(logging.DEBUG)   # 定义为INFO是因为requests要写debug
-request_handler = logging.FileHandler('http_server_log.log')
+request_handler = logging.FileHandler('http_log.log')
 fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 request_handler.setFormatter(fmt)
 logger.addHandler(request_handler)
@@ -61,6 +61,8 @@ retry = 5
 # 请求间隔睡眠时间
 
 r_sleep = 2
+
+error_sleep = 10
 
 # 网页编码
 

@@ -44,8 +44,10 @@ class RequestAPI(GeneralRequest):
                                 method=method, 
                                 payloads=payloads)
         # 在通用的一次性请求里，到这里是要关闭session的
+        # 清理cookie
+        self.discard_cookies()
         self.close_session()
-        
+
         return html
     
     def user_define_request(self):
