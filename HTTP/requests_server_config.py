@@ -12,16 +12,13 @@
 """
 
 from __future__ import absolute_import
-import os
 import logging
 
-# os.chdir(os.path.split(os.path.abspath(__file__))[0])
-
 # 请求模块日志
-logger = logging.getLogger(name='request_log')
+logger = logging.getLogger('main')
 
 logger.setLevel(logging.DEBUG)   # 定义为INFO是因为requests要写debug
-request_handler = logging.FileHandler('http_log.log')
+request_handler = logging.FileHandler('./log/http_log.log')
 fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 request_handler.setFormatter(fmt)
 logger.addHandler(request_handler)
@@ -42,15 +39,15 @@ class RequestFilter(logging.Filter):
             result = True
         return result
 
-reqfilter = RequestFilter()
-logger.addFilter(reqfilter)
+
+logger.addFilter(RequestFilter())
 
 filter_dict = {"isRequest": "notRequestLog"}
 
 # 代理
 
 proxy = {
-        "http": "xxxxxxx",
+        "http": "xxxxxx",
         "https": "xxxxxx",
     }
 

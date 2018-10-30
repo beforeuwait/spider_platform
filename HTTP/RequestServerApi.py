@@ -50,7 +50,7 @@ class RequestAPI(GeneralRequest):
 
         return html
     
-    def user_define_request(self):
+    def user_define_request(self, **kwargs):
         """这个方法的意义在于用户自己去设计请求过程
         一般登录啊
         绕过js啊
