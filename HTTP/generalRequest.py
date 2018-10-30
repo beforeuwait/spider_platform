@@ -26,13 +26,21 @@
     说来惭愧，写了那么久爬虫，竟然没有把page、request、session、application弄清楚
     在requests库里，一旦建立了session，session的cookie会持续更新，不需要额外去更新cookie
     方式是累积式的，因此要记得手动去session.cookies.clear()
+    #############################################################################
+    # updatetime: 2018/10/30
+    修剪枝叶，规范整理
+    在RequestServerApi.py 加入使用说明
+
 
 """
 
 import time
 import requests
 import HTTP.requests_server_config as scf
-from HTTP.requests_server_config import logger, filter_dict, r_sleep, error_sleep
+from HTTP.requests_server_config import logger
+from HTTP.requests_server_config import filter_dict
+from HTTP.requests_server_config import r_sleep
+from HTTP.requests_server_config import error_sleep
 from HTTP.Utils import check_params
 
 
@@ -45,7 +53,7 @@ class GeneralRequest():
     def __init__(self):
         # 初始化的时候就创建session,并带上proxy
         self.s = self.establish_session()
-        # 默认是带了代理的
+        # 实例化时候是默认是带了代理的
         # 不需要代理要在适当的时候 self.delete_proxies()
         self.update_proxy()
     
@@ -53,16 +61,19 @@ class GeneralRequest():
         """创建一个session
 
         session在笔者看来就是cookie管理
-        使用session的目的在于，容易操作cookie
+        使用session的目的在于，方便操作cookie
+        追踪cookie是把双刃剑，既方便了自己，也方便了网站来追踪
+        session的尿性就是:
+          1. 会对cookie做一个累积更新
+          2. 在没用 session.xx.update({'xx': 'xx'})时候，请求都是用session自己的
+           2.1 比如没有对headers进行update，session.headers还是原来的东东，各有各的长处
+          3. 分清session的定义，并不是一种保持连接，而是这一个session里，通信的比如cookie会被记录下来
         """
-        # update: 18-09-25
-        # session的尿性就是:
-        #   1. 会对cookie做一个累积更新
-        #   2. 在没用 session.xx.update({'xx': 'xx'})时候，请求都是用session自己的
-        #    2.1 比如没有对headers进行update，session.headers还是原来的东东，各有各的长处
-        #   3. 分清session的定义，并不是一种保持连接，而是这一个session里，通信的比如cookie会被记录下来
-        
-        return requests.Session()
+
+        # 在这里 requests.session()和 requests.Session()是一个尿性
+        session = requests.Session()
+
+        return session
     
     def close_session(self):
         """关闭session
@@ -70,10 +81,11 @@ class GeneralRequest():
         针对页面跳转，会出现打开新的session，
         当前的session也应该相应的关闭
         关闭所有adapter(适配器) such as the session
+
+        关于关闭session，笔者看来，清空cookie就等于一个新的cookie了
+        所以啊，这个close，就是个玩笑，不存在的，礼貌用用就好
         """
-        # updatetime: 2018-09-25
-        # 这个close啊，就是个玩笑，不存在的，礼貌的用用好了
-        
+    
         self.s.close()
         return 
 
@@ -82,14 +94,10 @@ class GeneralRequest():
 
         首先是判断是否有参数
         默认是不允许跳转的
+        在上一步，session里已经将参数放入了，所以在请求接受，记得清除params里的数据
+        带参和不带参的处理放到请求发起的地方，这个函数就是纯粹的发起一次请求而已
         """
-        """
-        response = self.s.get(url, params=params, allow_redirects=False) \
-                    if params is not None \
-                    else self.s.get(url, allow_redirects=False)
-        # 带参和不带参的处理放到请求发起的地方，这个函数就是纯粹的发起一次请求而已
-        """
-        response = self.s.get(url, allow_redirects=False, timeout=30)
+        response = self.s.get(url=url, allow_redirects=False, timeout=30)
 
         return response
 
@@ -99,7 +107,7 @@ class GeneralRequest():
         默认是不允许跳转的
         """
 
-        response = self.s.post(url, data=payloads, timeout=30)
+        response = self.s.post(url=url, data=payloads, timeout=30)
 
         return response
     
@@ -113,21 +121,21 @@ class GeneralRequest():
     def update_cookie_with_response(self, cookie):
         """通过response这个对象去更新cookie
 
-        **这里一个强制性的要求就是，请求后，更新cookie**
-
         这里需要关注，当请求的response是无效的
         更新cookie时候会报错，这里需要一个错误提示
+        
+        date: 2018-09-25 这是个没用的funs，session会自动更新其cookie，然而一开始指定的字段不会改变
         """
 
-        # date: 2018-09-25 这是个没用的funs，session会自动更新其cookie，然而一开始指定的字段不会改变
         try:
             check_params(cookie)
+            # cookie验证通过后，再更新cookie
+            self.s.cookies.update(cookie)
         except Exception as e:
             # TODO 这里做一个日志输出
-            logger.info("response更新cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+            logger.warning("response更新cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
         
-        # cookie验证通过后，再更新cookie
-        self.s.cookies.update(cookie)
+
         
     def update_cookie_with_outer(self, outer_cookie):
         """通过外部加载去更新cookie
@@ -137,12 +145,12 @@ class GeneralRequest():
         """
         try:
             check_params(outer_cookie)
+            # cookie验证通过后，再更新cookie        
+            self.s.cookies.update(outer_cookie)
         except Exception as e:
             # TODO 这里做一个日志输出
-            logger.info("session更新外部cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+            logger.warning("session更新外部cookie数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
         
-        # cookie验证通过后，再更新cookie        
-        self.s.cookies.update(outer_cookie)
         return
 
     
@@ -156,12 +164,13 @@ class GeneralRequest():
         """
         try:
             check_params(params)
+            self.s.headers.clear()
+            self.s.headers.update(params)
+
         except Exception as e:
             # TODO 这里做一个日志输出
-            logger.info("session更新headers数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
+            logger.warning("session更新headers数据失败,可能请求失败\t{0}".format(e), extra=filter_dict)
         
-        self.s.headers.clear()
-        self.s.headers.update(params)
         return
     
     def update_proxy(self):
@@ -183,8 +192,9 @@ class GeneralRequest():
     def discard_cookies(self):
         """discard all cookies
         删除/扔掉 所有cookie
+        恢复session到原始状态
         """
-        # self.s.cookies.clear_session_cookies()
+
         self.s.cookies.clear()
         return
     
@@ -194,8 +204,12 @@ class GeneralRequest():
         先判断params是否为空
         """
 
-        if params is not None:
+        try:
+            check_params(params)
             self.s.params.update(params)
+
+        except Exception as e:
+            logger.warning('为session更新params是出错，该params:\t{0}格式不对,info:\t{1}'.format(params, e))
         return
     
     def discard_params(self):
@@ -206,7 +220,10 @@ class GeneralRequest():
 
     def do_request(self, url, method, params, payloads):
         """根据指定的请求方式去请求"""
+        # 确定重试次数
         retry = scf.retry
+        # 将方法转换为大写
+        method = method.upper()
         # 有的网页直接反空，不建议用空，不好去分析原因,
         html = 'null_html'
         while retry > 0:
@@ -226,21 +243,18 @@ class GeneralRequest():
             except Exception as e:
                 # 输出log, 这里的错误都是网络上的错误
                 # logger.info('请求出错, 错误原因:', exc_info=True, extra=filter_dict)
-                logger.info('请求出错, 错误原因:\t{0}'.format(e), extra=filter_dict)
+                logger.warning('请求出错, 错误原因:\t{0}'.format(e), extra=filter_dict)
                 time.sleep(error_sleep)
                 
             else:
                 # 拿到response后，处理 
                 status_code = response.status_code
                 is_go_on = self.deal_status_code(status_code)
-                """
-                # 2018-09-25 多此一举，不需要
-                # 更新cookie
-                self.update_cookie_with_response(response.cookies)
-                """
+                # 状态码正确的情况下
                 if is_go_on:
                     # 返回html
-
+                    # 针对支持utf8的返回 utf8
+                    # 其他情况返回字符串的格式
                     try:
                         html = response.content.decode(scf.ec_u)
                     except:
