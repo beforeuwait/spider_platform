@@ -32,16 +32,22 @@ class DutyForNode():
     pass
 
 
-class FeedBack():
-    """反馈模块
+class MsgCenter():
+    """消息中心
 
     1. 由DutyForNode来实例化
     2. 向schedule模块反馈两样东西
     3. 第一是建立后告知schedule完成建立
     4. 检索自身状态，随时反馈
+    作为消息中心
+    5. 维护一个路由表
+    5. 监听各个进程的反馈数据
+    6. 转发数据
 
     """
+
     pass
+
 
 
 class TaskReader():
@@ -49,9 +55,10 @@ class TaskReader():
     
     接收任务后，需要做以下几件事
     1. 在 ./spider/目录下创建 xxxSpider.py脚本
-    2. 在 call_of_duty.ini 下写入任务索引，告知任务调取顺序
+    2. 在 call_of_duty.conf 下写入任务索引，告知任务调取顺序
         这个索引的作用是检索当前正执行任务，用于进程检测
-
+    3. 维护一个映射表，用来记录各个消息队列对应的程序
+    4. 维护这个索引和映射表
     """
     pass
 
@@ -59,9 +66,10 @@ class TaskReader():
 class TaskExecutor():
     """任务执行者
 
-    根据 call_of_duty.ini 里的任务索引
+    根据 call_of_duty.conf 里的任务索引
     向下读取，一边检测每个进程的状态
     一边启动相应进程开始执行任务
 
     """
     pass
+
