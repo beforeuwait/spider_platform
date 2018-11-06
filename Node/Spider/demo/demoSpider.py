@@ -87,5 +87,7 @@ class Persistence():
     根据要求，将相应的数据放入 hdfs、mysql、local里
 
     """
-    pass
+
+    def execute(self):
+        pass
     

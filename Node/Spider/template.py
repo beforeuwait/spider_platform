@@ -11,6 +11,8 @@
 
     模块内容，只根据提供的数据执行相应的操作
     负责和msgcenter沟通交由给相应的模块
+
+    execute放到类里
 """
 
 from redis import StrictRedis
@@ -66,9 +68,39 @@ class MsgCenter():
 
 class DemoSeed():
 
-    def execute(self):
+    def execute(self, **kwargs):
         seed = 'test'
         return seed
+
+class DemoDownloader():
+
+    def execute(self, **kwargs):
+        url = kwargs.get('url')
+        headers = kwargs.get('headers')
+        params = kwargs.get('params')
+        payloads = kwargs.get('payloads')
+        method = kwargs.get('method')
+        html = 'test'
+        return html
+
+class DemoParser():
+    """解析器"""
+
+    def execute(self, **kwargs):
+        """返回一个字典"""
+
+        result = {
+            'urls': [],
+            'data': []
+        }
+        return result
+
+class DemoPersistence():
+    """存储器"""
+
+    def execute(self, **kwargs):
+        # 将数据存储起来
+        pass
 
 seed_in = 'demo_seedin'
 
