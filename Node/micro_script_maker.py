@@ -41,10 +41,15 @@
         3. 生成过程中，就已经为各个小脚本配置好同消息中心通信的队列
             parser是个另外，因为涉及到，反馈url的问题
         4. 暂时不写通用的模板，一个部分一个部分的写
+    #######################################################
+    2018-11-07
+    继续开发:
+        
 """
 
 import os
 
+# 种子模块的
 seed_script = """
 
     # 这是种子模块的通信代码
@@ -55,6 +60,7 @@ seed_script = """
     que_out = '{1}'
         """
 
+# 下载器模块
 downloader_script = """
         
     # 这是请求模块的通信代码
@@ -66,6 +72,7 @@ downloader_script = """
 
         """
 
+# 解析器模块
 parser_script = """
         
     # 这是解析模块的通信代码
@@ -78,6 +85,7 @@ parser_script = """
 
 """
 
+# 持久化模块
 persistence_script = """
 
     # 这是持久化模块的通信代码
@@ -87,6 +95,7 @@ persistence_script = """
 
 """
 
+# 消息中心
 msg_script = '''
 
 from redis import StrictRedis
@@ -134,6 +143,150 @@ class MsgCenter():
 
     '''
 
+# seed模块的填充
+seedexe_script = '''
+from {0} import SeedsMaker
+
+class Executor():
+    """启动器
+
+    - 种子生成器，接到反馈，生产种子
+    - 下载器，接到种子，生产html
+    - 解析器，接到html，解析url和data
+    - 持久化存储，接到data，存储
+    """
+
+    def execute(self):
+        # 监听队列
+        sm = SeedsMaker()
+
+        mc = MsgCenter()
+
+        while True:
+            # 从队列获取数据
+            msg = mc.receive_msg_from_que(que_in)
+            if msg is not None:
+                # 代表有消息来了
+                # 执行
+                seed = sm.execute(msg)
+                # 再推入队列
+                if seed is not None:
+                    mc.push_msg_2_que(que_out, seed)
+                else:
+                    # 代表推送完毕,退出
+                    break
+
+'''
+
+# downloader模块填充
+downloaderexe_script = '''
+import time
+from {0} import Downloader
+
+class Executor():
+    """启动器
+
+    - 种子生成器，接到反馈，生产种子
+    - 下载器，接到种子，生产html
+    - 解析器，接到html，解析url和data
+    - 持久化存储，接到data，存储
+    """
+
+    def execute(self):
+        # 监听队列
+        sm = Downloader()
+
+        mc = MsgCenter()
+
+        while True:
+            # 从队列获取数据
+            msg = mc.receive_msg_from_que(que_in)
+            if msg is not None:
+                # 代表有消息来了
+                # 执行
+                html = sm.execute(msg)
+                # 再推入队列
+                if html is not None:
+                    mc.push_msg_2_que(que_out, html)
+
+            time.sleep(0.1)
+
+'''
+
+# parser模块填充
+parserexe_script = '''
+import time
+from {0} import Parser
+
+class Executor():
+    """启动器
+
+    - 种子生成器，接到反馈，生产种子
+    - 下载器，接到种子，生产html
+    - 解析器，接到html，解析url和data
+    - 持久化存储，接到data，存储
+    """
+
+    def execute(self):
+        # 监听队列
+        sm = Parser()
+
+        mc = MsgCenter()
+
+        while True:
+            # 从队列获取数据
+            html = mc.receive_msg_from_que(que_in)
+            if html is not None:
+                # 代表有消息来了
+                # 执行
+                data_dict = sm.execute(html)
+                # 这里就要判断了，是否有数据
+                if data_dict.get('url') != []:
+                    # 说明有url数据
+                    # 将url_list 推入队列
+                    url_msg = data_dict.get('url')
+                    # todo: 转换为json
+                    mc.push_msg_2_que(que_urlout, url_msg)
+                else:
+                    # 接下来推入数据队列
+                    data_msg = data_dict.get('data')
+                    mc.push_msg_2_que(que_dataout, data_msg)
+
+            time.sleep(0.1)
+'''
+
+# persistence模块填充
+persistenceexe_script = '''
+import time
+from {0} import Persistence
+
+class Executor():
+    """启动器
+
+    - 种子生成器，接到反馈，生产种子
+    - 下载器，接到种子，生产html
+    - 解析器，接到html，解析url和data
+    - 持久化存储，接到data，存储
+    """
+
+    def execute(self):
+        # 监听队列
+        sm = Persistence()
+
+        mc = MsgCenter()
+
+        while True:
+            # 从队列获取数据
+            data = mc.receive_msg_from_que(que_in)
+            if data is not None:
+                # 代表有消息来了
+                # 执行
+                seed = sm.execute(data)
+
+            time.sleep(0.1)
+'''
+
+
 class QueMaker():
     """作为消息中心的
     车间，装配车间
@@ -144,59 +297,15 @@ class QueMaker():
         self.project_name = project
         self.path = os.path.abspath('./Spider/{0}'.format(self.project_name))
 
-    def seed_module(self):
-        """
-        为seed模块匹配一个队列
-        """
-
-        que_in = '{0}_seedin'.format(self.project_name)
-        que_out = '{0}_seedout'.format(self.project_name)
-
-        script = seed_script.format(que_in, que_out).replace('    ', '')
-        return script
-
-    def downloader_module(self):
-        """
-        为 downloader 模块匹配一个队列
-        """
-
-        que_in = '{0}_downin'.format(self.project_name)
-        que_out = '{0}_downout'.format(self.project_name)
-
-        script = downloader_script.format(que_in, que_out).replace('    ', '')
-        return script
-
-    def parser_module(self):
-        """
-        为 parser 模块匹配一个队列
-        """
-
-        que_in = '{0}_parsein'.format(self.project_name)
-        que_urlout = '{0}_parseurlout'.format(self.project_name)
-        que_dataout = '{0}_parsedataout'.format(self.project_name)
-
-        script = parser_script.format(que_in, que_urlout, que_dataout).replace('    ', '')
-
-        return script
-
-    def persistence_module(self):
-        """为 Persistence 模块匹配一个队列"""
-
-        que_in = '{0}_persisin'.format(self.project_name)
-
-        script = persistence_script.format(que_in).replace('    ', '')
-
-        return script
-
     def load_que_2_file(self):
         """向文件里写入队列"""
 
         # 放入字典
         choice = {
-            os.path.join(self.path, '{0}_seed.py'.format(self.project_name)): self.seed_module(),
-            os.path.join(self.path, '{0}_downloader.py'.format(self.project_name)): self.downloader_module(),
-            os.path.join(self.path, '{0}_parser.py'.format(self.project_name)): self.parser_module(),
-            os.path.join(self.path, '{0}_persistence.py'.format(self.project_name)): self.persistence_module()
+            os.path.join(self.path, '{0}_seed.py'.format(self.project_name)): seed_script.format('{0}_seedin'.format(self.project_name), '{0}_seedout'.format(self.project_name)).replace('    ', ''),
+            os.path.join(self.path, '{0}_downloader.py'.format(self.project_name)): downloader_script.format('{0}_downin'.format(self.project_name), '{0}_downout'.format(self.project_name)).replace('    ', ''),
+            os.path.join(self.path, '{0}_parser.py'.format(self.project_name)): parser_script.format('{0}_parsein'.format(self.project_name), '{0}_parseurlout'.format(self.project_name), '{0}_parsedataout'.format(self.project_name)).replace('    ', ''),
+            os.path.join(self.path, '{0}_persistence.py'.format(self.project_name)): persistence_script.format('{0}_persisin'.format(self.project_name)).replace('    ', '')
         }
 
         # 写入文档
@@ -232,6 +341,8 @@ class ContentMaker:
 
     def __init__(self, project_name):
         self.project_name = project_name
+        self.path = os.path.abspath('./Spider/{0}'.format(self.project_name))
+
 
     def load_each_file_msg_center(self):
         """向每个文档放入消息中心代码"""
@@ -243,6 +354,27 @@ class ContentMaker:
             file_name = os.path.join(path, each.format(self.project_name))
             with open(file_name, 'a', encoding='utf8') as f:
                 f.write(msg_script)
+    
+    def load_each_file_execute_content(self):
+        """针对不同的文件，放入不同的执行"""
+        # 放入字典
+        choice = {
+            os.path.join(self.path, '{0}_seed.py'.format(self.project_name)): seedexe_script.format(self.project_name),
+            os.path.join(self.path, '{0}_downloader.py'.format(self.project_name)): downloaderexe_script.format(self.project_name),
+            os.path.join(self.path, '{0}_parser.py'.format(self.project_name)): parserexe_script.format(self.project_name),
+            os.path.join(self.path, '{0}_persistence.py'.format(self.project_name)): persistenceexe_script.format(self.project_name)
+        }
+
+        # 写入文档
+        for path, ctx in choice.items():
+            with open(path, 'a', encoding='utf8') as f:
+                f.write(ctx)
+    
+
+def main_logic():
+    """主逻辑部分"""
+    pass
+
 
 
 
@@ -253,3 +385,7 @@ if __name__ == '__main__':
     # cm.load_each_file_msg_center()
     q = QueMaker('demo')
     q.load_que_2_file()
+
+    # 1. 创建文件，写头
+    # 2. 放入消息中心
+    # 3. 放入执行内容

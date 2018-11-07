@@ -35,7 +35,7 @@ class SeedsMaker():
     
     def execute(self):
         """固定的调用函数"""
-        pass
+        print('执行')
 
 
 class Downloader():

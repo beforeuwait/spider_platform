@@ -45,6 +45,18 @@ class MsgCenter():
         return msg
 
 
+# 这是种子模块的通信代码
+# 接受到消息，执行seed代码，获取新种子
+# 将新种子放入队列里
+
+que_in = 'demo_seedin'
+que_out = 'demo_seedout'
+que_urlout = ''
+que_dataout = ''
+
+import time
+from demoSpider import Persistence
+
 class Executor():
     """启动器
 
@@ -56,12 +68,21 @@ class Executor():
 
     def execute(self):
         # 监听队列
-        pass
+        sm = Persistence()
+
+        mc = MsgCenter()
+
+        while True:
+            # 从队列获取数据
+            data = mc.receive_msg_from_que(que_in)
+            if data is not None:
+                # 代表有消息来了
+                # 执行
+                seed = sm.execute(data)
+
+            time.sleep(0.1)
 
 
-# 这是种子模块的通信代码
-# 接受到消息，执行seed代码，获取新种子
-# 将新种子放入队列里
-
-que_in = 'demo_seedin'
-que_out = 'demo_seedout'
+if __name__ == '__main__':
+    e = Executor()
+    e.execute()
