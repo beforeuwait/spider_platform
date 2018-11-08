@@ -176,6 +176,10 @@ class Executor():
                     # 代表推送完毕,退出
                     break
 
+
+if __name__ == '__main__':
+    exe = Executor()
+    exe.execute()
 '''
 
 # downloader模块填充
@@ -211,6 +215,10 @@ class Executor():
 
             time.sleep(0.1)
 
+
+if __name__ == '__main__':
+    exe = Executor()
+    exe.execute()
 '''
 
 # parser模块填充
@@ -253,6 +261,11 @@ class Executor():
                     mc.push_msg_2_que(que_dataout, data_msg)
 
             time.sleep(0.1)
+
+
+if __name__ == '__main__':
+    exe = Executor()
+    exe.execute()
 '''
 
 # persistence模块填充
@@ -284,6 +297,11 @@ class Executor():
                 seed = sm.execute(data)
 
             time.sleep(0.1)
+
+
+if __name__ == '__main__':
+    exe = Executor()
+    exe.execute()
 '''
 
 
@@ -371,21 +389,22 @@ class ContentMaker:
                 f.write(ctx)
     
 
-def main_logic():
-    """主逻辑部分"""
-    pass
+def main_logic(project_name='demo'):
+    """主逻辑部分
+    流程:
+    1. 创建文件，写头
+    2. 写入消息中心和分配的队列
+    3. 写入各配置
+    """
+    # 创建文件
+    t = FileMaker(project_name)
+    t.check_and_make_file()
+    # 写入消息模块
+    cm = ContentMaker(project_name)
+    cm.load_each_file_msg_center()
+    # 配置队列
+    que = QueMaker(project_name)
+    que.load_que_2_file()
+    # 写入功能
+    cm.load_each_file_execute_content()
 
-
-
-
-if __name__ == '__main__':
-    # t = FileMaker('demo')
-    # t.check_and_make_file()
-    # cm = ContentMaker('demo')
-    # cm.load_each_file_msg_center()
-    q = QueMaker('demo')
-    q.load_que_2_file()
-
-    # 1. 创建文件，写头
-    # 2. 放入消息中心
-    # 3. 放入执行内容
