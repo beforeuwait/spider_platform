@@ -1,14 +1,14 @@
 # coding=utf8
 
 """
-this is a demo project for a simplly spider
+this is a demo project for a simply spider
 
 该平台的爬虫文件，在节点接收到任务后
 TaskReader 生成 ./spider/xxx/目录
-在 ./spider/xxx/目录下 生成 xxxspider.py 脚本
+在 ./spider/xxx/目录下 生成 xxxSpider.py 脚本
 
-程序自动生成 xxx_seedsmaker.py、xxx_downloader.py、xxx_parser.py、xxx_persistence.py
-调用xxxspider.py脚本里对于的模块，然后持续执行
+程序自动生成 xxx_seed.py、xxx_downloader.py、xxx_parser.py、xxx_persistence.py
+调用xxxSpider.py脚本里对于的模块，然后持续执行
 """
 
 
