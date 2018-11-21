@@ -2,6 +2,8 @@
 
 import os
 from ProcessSupervise import *
+
+
 # type
 _TaskIndex = str
 
@@ -48,6 +50,5 @@ class TaskExecutor:
         # 腾内存
         del self.task_index_reader
 
-if __name__ == '__main__':
-    ps = PS()
-    print(ps)
+    def demo(self):
+        print(self.ps)
