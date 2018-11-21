@@ -107,7 +107,7 @@ class ProcessSupervise:
                 # 执行该task
                 try:
                     os.system(cmd)
-                    logger.debug('启动\t{0}'execute_path)
+                    logger.debug('启动\t{0}'.format(execute_path))
                 except Exception as e:
                     logger.warning('进程启动失败\t{0}\n启动命令:\t{1}'.format(e, cmd))
 
