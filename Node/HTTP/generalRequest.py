@@ -36,12 +36,12 @@
 
 import time
 import requests
-import HTTP.requests_server_config as scf
-from HTTP.requests_server_config import logger
-from HTTP.requests_server_config import filter_dict
-from HTTP.requests_server_config import r_sleep
-from HTTP.requests_server_config import error_sleep
-from HTTP.Utils import check_params
+import requests_server_config as scf
+from requests_server_config import logger
+from requests_server_config import filter_dict
+from requests_server_config import r_sleep
+from requests_server_config import error_sleep
+from Utils import check_params
 
 
 class GeneralRequest():
