@@ -55,6 +55,8 @@ class DealRequest:
             # 拿到编码
             page_code = chardet.detect(response.content).get('encoding')
             html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
+        
+        return html, status_code
 
     def switcher(self) -> _switcher:
         """返回一个选择器"""
