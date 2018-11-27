@@ -22,7 +22,7 @@ class HttpApi:
         :param kwargs:
         :return:
         """
-
+        # todo: 添加一个对method的判断，不是 get/post 则报错
         method = kwargs.get('method')
         url = kwargs.get('url')
         headers = kwargs.get('headers')
@@ -38,7 +38,7 @@ class HttpApi:
                                               redirect=False)
         return html
 
-    def user_define_request(self, **kwargs):
+    def user_define_request(self, **kwargs) -> None:
         """这个方法的意义在于用户自己去设计请求过程
         一般登录啊
         绕过js啊

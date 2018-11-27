@@ -13,8 +13,10 @@ from copy import deepcopy
 from session_handler import SessionHandler
 
 # type
-
+_html = str
+_status_code = int
 _switcher = dict
+_is_go_on = bool
 
 class DealRequest:
 
@@ -22,7 +24,7 @@ class DealRequest:
         self.session = requests.session()
         self.sh = SessionHandler(self.session)
 
-    def do_GET(self, *args) -> tuple:
+    def do_GET(self, *args) -> (_html, _status_code):
         """完成get请求"""
         html = 'null_html'
         status_code = 0
@@ -39,7 +41,7 @@ class DealRequest:
 
         return html, status_code
 
-    def do_POST(self, *args):
+    def do_POST(self, *args) -> (_html, _status_code):
         """完成POST请求"""
         html = 'null_html'
         status_code = 0
@@ -59,7 +61,7 @@ class DealRequest:
         return {'GET': self.do_GET,
                 'POST': self.do_POST}
 
-    def do_request(self, method, url, headers, cookies, params, payloads, redirect):
+    def do_request(self, method, url, headers, cookies, params, payloads, redirect) -> (_html, _status_code):
         """接受参数，完成请求"""
         # RETRY
         retry = deepcopy(config.retry)
@@ -85,7 +87,7 @@ class DealRequest:
                 continue
         return html, status_code
 
-    def deal_response(self, status_code):
+    def deal_response(self, status_code) -> _is_go_on:
         """为了方便重写
         往后只需要重构此部分
         针对 302的情况
