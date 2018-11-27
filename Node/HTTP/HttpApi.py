@@ -7,45 +7,16 @@
 
 from request_model import DealRequest
 
+# type
+_html = str
+_status_code = int
 
-class HttpApi(DealRequest):
+class HttpApi:
 
     def __init__(self) -> None:
-        super(HttpApi).__init__()
+        self.dr = DealRequest()
 
-    # def receive_and_request_old(self, **kwargs):
-    #     """接收参数
-    #     处理参数
-    #     选择请求方式
-    #     默认是带代理的
-    #     """
-    #
-    #     # 先获取参数， 目前就想了这么多
-    #     url = kwargs.get('url')
-    #     headers = kwargs.get('headers')
-    #     method = kwargs.get('method')
-    #     cookie = kwargs.get('cookie')
-    #     params = kwargs.get('params')
-    #     payloads = kwargs.get('payloads')
-    #
-    #     # 构建请求头
-    #     self.update_headers(headers)
-    #     if cookie is not None:
-    #         self.update_cookie_with_outer(cookie)
-    #
-    #     # 开始请求
-    #     html = self.do_request(url=url,
-    #                            params=params,
-    #                            method=method,
-    #                            payloads=payloads)
-    #     # 在通用的一次性请求里，到这里是要关闭session的
-    #     # 清理cookie
-    #     self.discard_cookies()
-    #     self.close_session()
-    #
-    #     return html
-
-    def receive_and_request(self, **kwargs):
+    def receive_and_request(self, **kwargs) -> _html:
         """
         接受参数，这里要检查method
         :param kwargs:
@@ -53,8 +24,19 @@ class HttpApi(DealRequest):
         """
 
         method = kwargs.get('method')
-
-        self.do_request(kwargs)
+        url = kwargs.get('url')
+        headers = kwargs.get('headers')
+        cookies = kwargs.get('cookies')
+        params = kwargs.get('params')
+        payloads = kwargs.get('payloads')
+        html, statuscode = self.dr.do_request(method=method,
+                                              url=url,
+                                              headers=headers,
+                                              cookies=cookies,
+                                              params=params,
+                                              payloads=payloads,
+                                              redirect=False)
+        return html
 
     def user_define_request(self, **kwargs):
         """这个方法的意义在于用户自己去设计请求过程
@@ -64,8 +46,3 @@ class HttpApi(DealRequest):
         都这这里自己定义
         """
         pass
-
-
-if __name__ == '__main__':
-    api = HttpApi()
-    api.receive_and_request(url='a', headers='b', method='get', cookies='c', params='d')

@@ -22,12 +22,12 @@ class DealRequest:
         self.session = requests.session()
         self.sh = SessionHandler(self.session)
 
-    def do_GET(self, url, params, payloads) -> tuple:
+    def do_GET(self, *args) -> tuple:
         """完成get请求"""
         html = 'null_html'
         status_code = 0
         try:
-            response = self.session.get(url=url, params=params, allow_redirects=False, timeout=30)
+            response = self.session.get(url=args[0], params=args[1], allow_redirects=args[3], timeout=30)
         except:
             pass
         else:
@@ -39,39 +39,43 @@ class DealRequest:
 
         return html, status_code
 
-    def do_POST(self, **kwargs):
+    def do_POST(self, *args):
         """完成POST请求"""
-        pass
+        html = 'null_html'
+        status_code = 0
+        try:
+            response = self.session.get(url=args[0], params=args[2], allow_redirects=args[3], timeout=30)
+        except:
+            pass
+        else:
+            # 请求成功
+            status_code = response.status_code
+            # 拿到编码
+            page_code = chardet.detect(response.content).get('encoding')
+            html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
 
     def switcher(self) -> _switcher:
         """返回一个选择器"""
         return {'GET': self.do_GET,
                 'POST': self.do_POST}
 
-    def do_request(self, **kwargs):
+    def do_request(self, method, url, headers, cookies, params, payloads, redirect):
         """接受参数，完成请求"""
         # RETRY
         retry = deepcopy(config.retry)
         html = 'null_html'
         status_code = 0
-
-        method = kwargs.get('method')
-        url = kwargs.get('url')
-        headers = kwargs.get('headers')
-        cookies = kwargs.get('cookies')
-        params = kwargs.get('params')
-        payloads = kwargs.get('payloads')
         # 请求放大写
         method = method.upper()
         # 组织部分
         # 更新请求头
-        self.sh.update_cookie_headers_params(('headers', headers))
+        self.sh.update_cookie_headers_params('headers', headers)
         # 更新cookie
         if cookies:
-            self.sh.update_cookie_headers_params(('cookies', cookies))
+            self.sh.update_cookie_headers_params('cookies', cookies)
         # 执行请求
         while retry > 0:
-            html, status_code = self.switcher().get(method)(url=url, params=params, payloads=payloads)
+            html, status_code = self.switcher().get(method)(url, params, payloads, redirect)
             is_go_on = self.deal_response(status_code)
             if status_code != 0 and is_go_on:
                 # 说明刚刚的请求失败

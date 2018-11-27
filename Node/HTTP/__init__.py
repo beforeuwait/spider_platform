@@ -10,3 +10,7 @@ __date__ = '2018-11-27'
     2018-11-27：当前能用的只有
     get/post 请求
 """
+
+__all__ = ['RequestAPI']
+
+from .HttpApi import HttpApi as RequestAPI
