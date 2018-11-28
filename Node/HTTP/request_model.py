@@ -8,12 +8,12 @@
 """
 import time
 import chardet
-import config
+import HTTP.config as config
 import requests
 from copy import deepcopy
-from session_handler import SessionHandler
-from utils import logger
-from utils import filter_dict
+from HTTP.session_handler import SessionHandler
+from HTTP.utils import logger
+from HTTP.utils import filter_dict
 
 # type
 _html = str

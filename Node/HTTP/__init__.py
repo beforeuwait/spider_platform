@@ -13,4 +13,4 @@ __date__ = '2018-11-27'
 
 __all__ = ['RequestAPI']
 
-from .HttpApi import HttpApi as RequestAPI
+from HTTP.HttpApi import HttpApi as RequestAPI

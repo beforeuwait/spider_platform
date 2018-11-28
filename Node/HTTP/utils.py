@@ -52,3 +52,11 @@ logger.addHandler(handler)
 logger.addFilter(RequestFilter())
 
 filter_dict = {"isRequest": "notRequestLog"}
+
+
+# 定义一个异常
+
+class MethodCheckError(Exception):
+
+    def __str__(self):
+        return '当前传入method不是指定的格式类型，参照 get,post'

@@ -6,8 +6,8 @@
 """
 
 from importlib import reload
-import config
-from utils import check_params
+import HTTP.config as config
+from HTTP.utils import check_params
 
 # type
 _check_type = dict

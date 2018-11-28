@@ -5,7 +5,8 @@
 """
 
 
-from request_model import DealRequest
+from HTTP.request_model import DealRequest
+from HTTP.utils import MethodCheckError
 
 # type
 _html = str
@@ -25,6 +26,8 @@ class HttpApi:
         """
         # todo: 添加一个对method的判断，不是 get/post 则报错
         method = kwargs.get('method')
+        if method not in ['get', 'GET', 'post', 'POST']:
+            raise MethodCheckError
         url = kwargs.get('url')
         headers = kwargs.get('headers')
         cookies = kwargs.get('cookies')
