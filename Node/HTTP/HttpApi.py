@@ -11,6 +11,7 @@ from request_model import DealRequest
 _html = str
 _status_code = int
 
+
 class HttpApi:
 
     def __init__(self) -> None:

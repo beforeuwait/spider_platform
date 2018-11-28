@@ -6,17 +6,21 @@
 重写的目的是，增加灵活，减少引用时的重写
 
 """
+import time
 import chardet
 import config
 import requests
 from copy import deepcopy
 from session_handler import SessionHandler
+from utils import logger
+from utils import filter_dict
 
 # type
 _html = str
 _status_code = int
 _switcher = dict
 _is_go_on = bool
+
 
 class DealRequest:
 
@@ -30,11 +34,12 @@ class DealRequest:
         status_code = 0
         try:
             response = self.session.get(url=args[0], params=args[1], allow_redirects=args[3], timeout=30)
-        except:
-            pass
+        except Exception as e:
+            logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
         else:
             # 请求成功
             status_code = response.status_code
+            logger.debug('GET:\t{0}\t{1}'.format(status_code, args[0]))
             # 拿到编码
             page_code = chardet.detect(response.content).get('encoding')
             html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
@@ -47,11 +52,12 @@ class DealRequest:
         status_code = 0
         try:
             response = self.session.get(url=args[0], params=args[2], allow_redirects=args[3], timeout=30)
-        except:
-            pass
+        except Exception as e:
+            logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
         else:
             # 请求成功
             status_code = response.status_code
+            logger.debug('POST:\t{0}\t{1}'.format(status_code, args[0]))
             # 拿到编码
             page_code = chardet.detect(response.content).get('encoding')
             html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
@@ -82,14 +88,16 @@ class DealRequest:
             html, status_code = self.switcher().get(method)(url, params, payloads, redirect)
             is_go_on = self.deal_response(status_code)
             if status_code != 0 and is_go_on:
-                # 说明刚刚的请求失败
                 break
-            else:
-                # 这里可以休息一下，再次访问
-                continue
+            # 说明刚刚的请求失败
+            # 这里可以休息一下，再次访问
+            time.sleep(config.w_sleep)
+            retry -= 1
+
         return html, status_code
 
-    def deal_response(self, status_code) -> _is_go_on:
+    @staticmethod
+    def deal_response(status_code) -> _is_go_on:
         """为了方便重写
         往后只需要重构此部分
         针对 302的情况
