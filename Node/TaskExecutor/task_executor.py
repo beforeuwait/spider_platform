@@ -49,6 +49,3 @@ class TaskExecutor:
         del self.ps
         # 腾内存
         del self.task_index_reader
-
-    def demo(self):
-        print(self.ps)
