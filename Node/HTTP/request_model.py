@@ -51,7 +51,7 @@ class DealRequest:
         html = 'null_html'
         status_code = 0
         try:
-            response = self.session.get(url=args[0], params=args[2], allow_redirects=args[3], timeout=30)
+            response = self.session.post(url=args[0], data=args[2], allow_redirects=args[3], timeout=30)
         except Exception as e:
             logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
         else:
