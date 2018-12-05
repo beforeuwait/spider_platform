@@ -33,11 +33,11 @@ class TaskExecutor:
     def task_index_reader(self) -> None:
         self._task_index = ''
 
-    def execute_all_task(self):
+    def execute_all_task(self) -> None:
         """执行task_index里全部任务"""
         self.ps.start_process(self.task_index_reader)
 
-    def kill_process(self):
+    def kill_process(self) -> None:
         """将task_index里任务标识为1的任务kill掉"""
         # 先获取待kill的任务列表
         kill_list = [i.split('\t')[1] for i in self.task_index_reader.split('\n') if i.split('\t')[-1] == '1']
