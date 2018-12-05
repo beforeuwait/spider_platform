@@ -1,5 +1,9 @@
 # coding=utf-8
 
+from utils import make_file
+from utils import make_main_script
+
+
 # type
 
 class TaskReader:
@@ -26,7 +30,13 @@ class TaskReader:
     def task_reader(self):
         """拿到msg"""
         msg_dict = self.msg_temp()
-        print(msg_dict.get('code'))
+        code = msg_dict.get('code')
+        task_name = msg_dict.get('task_name')
+
+        # 先是在 ../spider/目录下创建对应目录
+        make_file(task_name)
+        # 接下来是在 ../spider/目录下创建对应的大脚本
+        make_main_script(task_name, code)
 
 if __name__ == '__main__':
     tr = TaskReader()
