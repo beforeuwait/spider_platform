@@ -6,6 +6,30 @@ from utils import make_main_script
 
 # type
 
+class MsgCenterDealer:
+    """消息中心处理器
+    1. 接受任务
+    2. 反馈
+    """
+    pass
+
+
+class TaskHandler:
+    """Task处理
+    1. 生成大脚本
+    2. 生成小脚本
+    """
+    pass
+
+
+class IndexHandler:
+    """索引处理
+    1. 维护旧索引
+    2. 写入新索引
+    """
+    pass
+
+    
 class TaskReader:
     """任务阅读器
 
@@ -37,6 +61,12 @@ class TaskReader:
         make_file(task_name)
         # 接下来是在 ../spider/目录下创建对应的大脚本
         make_main_script(task_name, code)
+
+        # todo: 接下来开始生成小脚本
+        pass
+
+        # todo: 接下来维护索引
+    
 
 if __name__ == '__main__':
     tr = TaskReader()
