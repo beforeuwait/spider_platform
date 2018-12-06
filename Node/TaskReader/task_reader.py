@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from utils import make_file
-from utils import make_main_script
+from TaskReader.utils import make_file
+from TaskReader.utils import make_main_script
 
 
 # type
