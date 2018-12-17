@@ -2,6 +2,13 @@
 
 """
 外部引用的api
+
+12-17:
+    在外部调用api的时候，关于session 的控制，应该放到最外层
+    里层只负责完成自己应该做的事情
+    结束、清理这类任务应该交由这里api去完成
+
+    同时方便 diy方法去觉得是否清除cookie
 """
 
 
@@ -24,7 +31,7 @@ class HttpApi:
         :param kwargs:
         :return:
         """
-        # todo: 添加一个对method的判断，不是 get/post 则报错
+        
         method = kwargs.get('method')
         if method not in ['get', 'GET', 'post', 'POST']:
             raise MethodCheckError
