@@ -3,8 +3,8 @@
 # proxy
 
 proxy = {
-        "http": "xxxxxxx",
-        "https": "xxxxxx",
+        "http": "xxxxxxxxx",
+        "https": "xxxxxxxx",
     }
 
 # retry

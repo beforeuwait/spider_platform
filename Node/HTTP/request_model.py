@@ -40,9 +40,8 @@ class DealRequest:
             # 请求成功
             status_code = response.status_code
             logger.debug('GET:\t{0}\t{1}'.format(status_code, args[0]))
-            # 拿到编码
-            page_code = chardet.detect(response.content).get('encoding')
-            html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
+            # 应该直接返回字节流，不要解码
+            html = response.content
 
         return html, status_code
 
@@ -59,8 +58,7 @@ class DealRequest:
             status_code = response.status_code
             logger.debug('POST:\t{0}\t{1}'.format(status_code, args[0]))
             # 拿到编码
-            page_code = chardet.detect(response.content).get('encoding')
-            html = response.content.decode('utf-8') if page_code == 'utf-8' else response.content.decode('gbk')
+            html = response.content
         
         return html, status_code
 
