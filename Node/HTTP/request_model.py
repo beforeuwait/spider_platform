@@ -20,6 +20,7 @@ _html = str
 _status_code = int
 _switcher = dict
 _is_go_on = bool
+_resp = tuple
 
 
 class DealRequest:
@@ -28,7 +29,8 @@ class DealRequest:
         self.session = requests.session()
         self.sh = SessionHandler(self.session)
 
-    def do_GET(self, *args) -> (_html, _status_code):
+    # def do_GET(self, *args) -> (_html, _status_code):
+    def do_GET(self, *args) -> _resp:
         """完成get请求"""
         html = 'null_html'
         status_code = 0
@@ -43,9 +45,10 @@ class DealRequest:
             # 应该直接返回字节流，不要解码
             html = response.content
 
-        return html, status_code
-
-    def do_POST(self, *args) -> (_html, _status_code):
+        return (html, status_code)
+    
+    # def do_POST(self, *args) -> (_html, _status_code):
+    def do_POST(self, *args) -> _resp:
         """完成POST请求"""
         html = 'null_html'
         status_code = 0
@@ -60,7 +63,7 @@ class DealRequest:
             # 拿到编码
             html = response.content
         
-        return html, status_code
+        return (html, status_code)
 
     def switcher(self) -> _switcher:
         """返回一个选择器"""

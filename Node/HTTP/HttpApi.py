@@ -33,7 +33,7 @@ class HttpApi:
         cookies = kwargs.get('cookies')
         params = kwargs.get('params')
         payloads = kwargs.get('payloads')
-        html, statuscode = self.dr.do_request(method=method,
+        resp = self.dr.do_request(method=method,
                                               url=url,
                                               headers=headers,
                                               cookies=cookies,
@@ -43,11 +43,11 @@ class HttpApi:
         # 清理headers
         # 清理cookie
         # 关闭session
-        page_code = chardet.detect(html).get('encoding')
+        page_code = chardet.detect(resp[0]).get('encoding')
         html = html.decode('utf-8') if page_code == 'utf-8' else html.decode('gbk')
         [self.dr.sh.discard_cookie_headers_params(i) for i in ['headers', 'cookies', 'params']]
         self.dr.sh.close_session()
-        return html
+        return resp[0]
 
     def user_define_request(self, **kwargs) -> None:
         """这个方法的意义在于用户自己去设计请求过程
