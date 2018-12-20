@@ -107,6 +107,9 @@ class DealRequest:
         针对 500 + 的情况
         """
         is_go_on = False
+        # todo: 这里需要重写.........
+        # 不能简单的去设定 status_code 小于300就通过
+        # 这几天遇到 521 的情况
         if status_code < 300:
             # 请求通过
             is_go_on = True
