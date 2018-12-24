@@ -44,10 +44,10 @@ class HttpApi:
         # 清理cookie
         # 关闭session
         page_code = chardet.detect(resp[0]).get('encoding')
-        html = html.decode('utf-8') if page_code == 'utf-8' else html.decode('gbk')
+        html = resp[0].decode('utf-8') if page_code == 'utf-8' else resp[0].decode('gbk')
         [self.dr.sh.discard_cookie_headers_params(i) for i in ['headers', 'cookies', 'params']]
         self.dr.sh.close_session()
-        return resp[0]
+        return html
 
     def user_define_request(self, **kwargs) -> None:
         """这个方法的意义在于用户自己去设计请求过程
