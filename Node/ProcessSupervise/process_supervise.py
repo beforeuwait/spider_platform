@@ -125,7 +125,7 @@ class ProcessSupervise:
         # 需要找到对应pid
         # 然后通过 Process().kill()
 
-        task_list_2_kill = args[0]
+        task_list_2_kill = [arg[1] for arg in args]
         # 获取当前python相关的进程
         # 接下来检索对应的pid
         kill_pids = [i[1] for i in self.all_process_list if i[0] in task_list_2_kill]
