@@ -6,21 +6,22 @@
 重写的目的是，增加灵活，减少引用时的重写
 
 """
+
+import random
 import time
-import chardet
 import HTTP.config as config
 import requests
 from copy import deepcopy
 from HTTP.session_handler import SessionHandler
 from HTTP.utils import logger
 from HTTP.utils import filter_dict
+from HTTP.ua import user_agent_list
 
 # type
 _html = str
 _status_code = int
 _switcher = dict
 _is_go_on = bool
-_resp = tuple
 
 
 class DealRequest:
@@ -29,41 +30,47 @@ class DealRequest:
         self.session = requests.session()
         self.sh = SessionHandler(self.session)
 
-    # def do_GET(self, *args) -> (_html, _status_code):
-    def do_GET(self, *args) -> _resp:
+    def do_GET(self, *args) -> (_html, _status_code):
         """完成get请求"""
-        html = 'null_html'
+        html = b'null_html'
         status_code = 0
         try:
-            response = self.session.get(url=args[0], params=args[1], allow_redirects=args[3], timeout=30)
+            response = self.session.get(url=args[0],
+                                        params=args[1],
+                                        allow_redirects=args[3],
+                                        proxies=config.proxy,
+                                        timeout=30)
         except Exception as e:
             logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
         else:
             # 请求成功
             status_code = response.status_code
-            logger.debug('GET:\t{0}\t{1}'.format(status_code, args[0]))
+            logger.debug('GET:\t{0}\t{1}'.format(status_code, args[0]), extra=filter_dict)
             # 应该直接返回字节流，不要解码
             html = response.content
 
-        return (html, status_code)
-    
-    # def do_POST(self, *args) -> (_html, _status_code):
-    def do_POST(self, *args) -> _resp:
+        return html, status_code
+
+    def do_POST(self, *args) -> (_html, _status_code):
         """完成POST请求"""
-        html = 'null_html'
+        html = b'null_html'
         status_code = 0
         try:
-            response = self.session.post(url=args[0], data=args[2], allow_redirects=args[3], timeout=30)
+            response = self.session.post(url=args[0],
+                                         data=args[2],
+                                         allow_redirects=args[3],
+                                         proxies=config.proxy,
+                                         timeout=30)
         except Exception as e:
             logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
         else:
             # 请求成功
             status_code = response.status_code
-            logger.debug('POST:\t{0}\t{1}'.format(status_code, args[0]))
+            logger.debug('POST:\t{0}\t{1}'.format(status_code, args[0]), extra=filter_dict)
             # 拿到编码
             html = response.content
         
-        return (html, status_code)
+        return html, status_code
 
     def switcher(self) -> _switcher:
         """返回一个选择器"""
@@ -74,7 +81,7 @@ class DealRequest:
         """接受参数，完成请求"""
         # RETRY
         retry = deepcopy(config.retry)
-        html = 'null_html'
+        html = b'null_html'
         status_code = 0
         # 请求放大写
         method = method.upper()
@@ -107,10 +114,8 @@ class DealRequest:
         针对 500 + 的情况
         """
         is_go_on = False
-        # todo: 这里需要重写.........
-        # 不能简单的去设定 status_code 小于300就通过
-        # 这几天遇到 521 的情况
-        if status_code < 300:
+        if status_code < 300 or status_code == 521:
             # 请求通过
             is_go_on = True
         return is_go_on
+
