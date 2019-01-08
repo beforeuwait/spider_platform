@@ -25,6 +25,7 @@ class SessionHandler:
     def __init__(self, session) -> None:
         self._s = session
         # 加载proxy
+        # session把自己的proxies带上代理，请求中并不会加载
         # self.update_proxy()
 
     def close_session(self) -> None:
