@@ -105,3 +105,6 @@ ENV/
 .mypy_cache/
 *.xml
 *.iml
+
+# for my own
+real_config.py

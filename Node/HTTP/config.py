@@ -2,11 +2,16 @@
 
 # proxy
 
-proxy = {
-        "http": "xxxxxxxxx",
-        "https": "xxxxxxxx",
+proxy_pro = {
+        "http": "xxxxxx",
+        "https": "xxxxxxx",
     }
 
+proxy_dyn = {
+    'http': 'xxxxxxx',
+    'https': 'xxxxxxxx'
+
+}
 # retry
 # tell request_model how many times could it retry
 
