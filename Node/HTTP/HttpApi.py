@@ -34,12 +34,12 @@ class HttpApi:
         params = kwargs.get('params')
         payloads = kwargs.get('payloads')
         resp = self.dr.do_request(method=method,
-                                              url=url,
-                                              headers=headers,
-                                              cookies=cookies,
-                                              params=params,
-                                              payloads=payloads,
-                                              redirect=False)
+                                  url=url,
+                                  headers=headers,
+                                  cookies=cookies,
+                                  params=params,
+                                  payloads=payloads,
+                                  redirect=False)
         # 清理headers
         # 清理cookie
         # 关闭session

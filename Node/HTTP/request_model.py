@@ -15,7 +15,6 @@ from copy import deepcopy
 from HTTP.session_handler import SessionHandler
 from HTTP.utils import logger
 from HTTP.utils import filter_dict
-from HTTP.ua import user_agent_list
 
 # type
 _html = str
@@ -38,7 +37,6 @@ class DealRequest:
             response = self.session.get(url=args[0],
                                         params=args[1],
                                         allow_redirects=args[3],
-                                        proxies=config.proxy,
                                         timeout=30)
         except Exception as e:
             logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
@@ -59,7 +57,6 @@ class DealRequest:
             response = self.session.post(url=args[0],
                                          data=args[2],
                                          allow_redirects=args[3],
-                                         proxies=config.proxy,
                                          timeout=30)
         except Exception as e:
             logger.warning('请求出错\t{0}'.format(e, extra=filter_dict))
@@ -77,23 +74,27 @@ class DealRequest:
         return {'GET': self.do_GET,
                 'POST': self.do_POST}
 
-    def do_request(self, method, url, headers, cookies, params, payloads, redirect) -> (_html, _status_code):
+    # def do_request(self, method, url, headers, cookies, params, payloads, redirect) -> (_html, _status_code):
+    def do_request(self, **kwargs) -> (_html, _status_code):
         """接受参数，完成请求"""
         # RETRY
         retry = deepcopy(config.retry)
         html = b'null_html'
         status_code = 0
         # 请求放大写
-        method = method.upper()
+        method = kwargs['method'].upper()
         # 组织部分
         # 更新请求头
-        self.sh.update_cookie_headers_params('headers', headers)
+        self.sh.update_cookie_headers_params('headers', kwargs['headers'])
         # 更新cookie
-        if cookies:
-            self.sh.update_cookie_headers_params('cookies', cookies)
+        if kwargs['cookies']:
+            self.sh.update_cookie_headers_params('cookies', kwargs['cookies'])
         # 执行请求
         while retry > 0:
-            html, status_code = self.switcher().get(method)(url, params, payloads, redirect)
+            html, status_code = self.switcher().get(method)(kwargs['url'],
+                                                            kwargs['params'],
+                                                            kwargs['payloads'],
+                                                            kwargs['redirect'])
             is_go_on = self.deal_response(status_code)
             if status_code != 0 and is_go_on:
                 break
@@ -104,9 +105,10 @@ class DealRequest:
 
         return html, status_code
 
-    @staticmethod
-    def deal_response(status_code) -> _is_go_on:
-        """为了方便重写
+    def deal_response(self, status_code) -> _is_go_on:
+        """
+        ** 一般情况，不需要重写，特殊的在请求上有要求的，此部分需要重写
+        为了方便重写
         往后只需要重构此部分
         针对 302的情况
         针对 301的情况

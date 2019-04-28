@@ -1,5 +1,6 @@
 # coding=utf-8
 
+
 """
     session 处理
 
@@ -11,22 +12,17 @@ from HTTP.utils import check_params
 
 # type
 _check_type = dict
-_proxy = config.proxy
+_proxy = config.proxy_pro
 _outer_params = dict
 
 
 class SessionHandler:
-    """
-    承担对session的操作
-
-    2019-01-07  发现该模块对proxies控制等于0！ proxies还是要放到请求上
-    """
 
     def __init__(self, session) -> None:
         self._s = session
         # 加载proxy
         # session把自己的proxies带上代理，请求中并不会加载
-        # self.update_proxy()
+        self.update_proxy()
 
     def close_session(self) -> None:
         """关闭session"""
