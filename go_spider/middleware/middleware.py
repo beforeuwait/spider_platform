@@ -26,3 +26,9 @@ def listen_queue(queue):
     if redis.exists(queue):
         msg = redis.rpop(queue)
     return msg
+
+
+# 推数据进入队列
+def push_msg_2_queue(queue, msg):
+    cli = connect_redis()
+    cli.lpush(queue, msg)

@@ -21,21 +21,10 @@ import time
 from spider.routing_table import switcher
 from utils import json_parse, json_dump
 from middleware.middleware import listen_queue
+# from middleware.middleware import push_msg_2_queue
 
 # config
 que = 'html'
-
-
-def statistic_run_time(fun):
-
-    def executor(*args):
-        start = time.time()
-        data = fun(*args)
-        end = time.time()
-        run_time = end-start
-        # todo: 记录执行时间
-        return data
-    return executor
 
 
 def run():
@@ -44,13 +33,12 @@ def run():
         msg = listen_queue(que)
         if msg:
             # 执行相应模块
-            pass
+            parse_msg(msg)
         else:
-            continue
             time.sleep(0.1)
+            continue
 
 
-@statistic_run_time
 def parse_msg(msg):
     # 将msg解析，并调用相应的模块执行
     # 在spider目录下维护一份路由表
@@ -58,5 +46,8 @@ def parse_msg(msg):
     # 在msg_dict 拿到编码，调用switcher，并执行函数
     # 执行完毕，返回的json 有data字段， url， new url字段
     # 构造url不在 普通的url和api 的区别
+    print(msg)
 
 
+if __name__ == '__main__':
+    run()

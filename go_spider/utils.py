@@ -27,5 +27,5 @@ def json_dump(js_dict):
         js_ctx = json.dumps(js_dict, ensure_ascii=False)
     except Exception as e:
         # todo: 添加logger
-        pass
+        print(e)
     return js_ctx
