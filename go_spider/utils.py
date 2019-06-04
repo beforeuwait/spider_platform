@@ -16,6 +16,7 @@ def json_parse(js_ctx):
         js_dict = json.loads(js_ctx)
     except Exception as e:
         # todo: 添加logger
+        print(e)
         pass
     return js_dict
 

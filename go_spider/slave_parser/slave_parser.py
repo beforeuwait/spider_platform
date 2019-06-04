@@ -18,13 +18,14 @@
 
 """
 import time
-from spider.routing_table import switcher
+from spider.routing_table import parser_switch as switcher
 from utils import json_parse, json_dump
 from middleware.middleware import listen_queue
-# from middleware.middleware import push_msg_2_queue
+from middleware.middleware import push_msg_2_queue
 
 # config
 que = 'html'
+que_bf = 'bmf'
 
 
 def run():
@@ -46,7 +47,14 @@ def parse_msg(msg):
     # 在msg_dict 拿到编码，调用switcher，并执行函数
     # 执行完毕，返回的json 有data字段， url， new url字段
     # 构造url不在 普通的url和api 的区别
-    print(msg)
+    task_name = msg_dict.get('task')
+    args = msg_dict.get('args')
+    content = msg_dict.get('content')
+    if 'list' in task_name:
+        for list_msg in switcher.get(task_name)(task_name, args, content):
+            # 推入bloomFilter
+            push_msg_2_queue(que_bf, json_dump(list_msg))
+
 
 
 if __name__ == '__main__':

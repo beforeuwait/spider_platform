@@ -7,14 +7,15 @@
 from redis import StrictRedis
 
 # config
-host = 'localhost'
+host = '192.168.2.88'
 port = 6379
 db = 1
+pwd = 'QWE123'
 
 
 # 连接 redis
 def connect_redis():
-    return StrictRedis(host=host, port=port, db=db)
+    return StrictRedis(host=host, port=port, db=db, password=pwd)
 
 
 # 监听队列

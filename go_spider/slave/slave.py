@@ -7,11 +7,10 @@
 """
 
 import time
-from spider.routing_table import switcher
+from spider.routing_table import spider_switcher as switcher
 from utils import json_parse, json_dump
 from middleware.middleware import listen_queue
 from middleware.middleware import push_msg_2_queue
-
 
 # config
 task_queue = 'task'
@@ -40,7 +39,7 @@ def deal_msg(msg):
     args = msg_dict.get('args', None)
     func = switcher.get(task_name)
     html = func(args)
-    next_msg = {"task": task_name, "content": html}
+    next_msg = {"task": task_name, "args": args, "content": html}
     return json_dump(next_msg)
 
 
