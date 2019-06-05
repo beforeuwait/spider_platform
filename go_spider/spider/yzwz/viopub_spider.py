@@ -91,9 +91,20 @@ class ViopubLogic:
         html = self.api.send_args_get_html(url=url, headers=headers, method='post', payloads=payloads, isSession='yes', isProxy='yes', isVerify=False, code='utf-8')
         return html
 
-    def download_data_detail(self):
+    def download_data_detail(self, p_code, pid):
         # 下载详情
-        pass
+        url = cnf.url_detail.format(p_code)
+        headers = cnf.headers_detail
+        headers.update({
+            'User-Agent': self.headers,
+            'Host': '{0}.122.gov.cn'.format(p_code),
+            'Referer': deepcopy(cnf.url_viopub.format(p_code)),
+            'Origin': deepcopy(cnf.url_home).format(p_code),
+        })
+        payloads = cnf.payloads_detail
+        payloads.update({'id': pid})
+        html = self.api.send_args_get_html(url=url, headers=headers, method='post', payloads=payloads, isSession='no', isProxy='yes', isVerify=False, code='utf-8')
+        return html
 
     def run(self, prov):
         p_code = self.construct_params(prov)
@@ -111,6 +122,13 @@ class ViopubLogic:
         # 以上可以当做一个循环
         html = self.download_data_list(ca, p_code)
         return html
+
+    def run_detail(self, args):
+        """目前看来，请求详情并不需要cookie"""
+        p_code = self.construct_params(args[0])
+        html = self.download_data_detail(p_code, args[1])
+        return html
+
 
 
 if __name__ == '__main__':

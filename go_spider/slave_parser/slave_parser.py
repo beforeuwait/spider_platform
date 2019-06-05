@@ -55,6 +55,10 @@ def parse_msg(msg):
             # 推入bloomFilter
             push_msg_2_queue(que_bf, json_dump(list_msg))
 
+    # detail
+    if 'detail' in task_name:
+        detail_msg = switcher.get(task_name)(task_name, args, content)
+        print(detail_msg)
 
 
 if __name__ == '__main__':

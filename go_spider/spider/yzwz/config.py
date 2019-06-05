@@ -155,7 +155,7 @@ url_c = 'https://{0}.122.gov.cn/m/tmri/captcha/math?nocache={1}'
 
 url_list = 'https://{0}.122.gov.cn/m/viopub/getVioPubList'
 
-url_detail = 'https://sc.122.gov.cn/m/viopub/getVioPubDetail'
+url_detail = 'https://{0}.122.gov.cn/m/viopub/getVioPubDetail'
 
 # params
 
@@ -166,4 +166,8 @@ payloads_list = {
     'endTime': '2019-05-27',
     'gsyw': '01',
     'csessionid': '14'
+}
+
+payloads_detail = {
+    'id': ''
 }

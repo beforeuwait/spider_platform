@@ -27,10 +27,13 @@ def parse_list(args, content):
         yield {'task': 'yzwz_detail', 'args': [args, task_id]}
 
 
-def parse_detail(args, html):
+def parse_detail(args, content):
     # 解析详情
     # 返回详情数据
-    pass
+    js_dict = json_parse(content)
+    data = js_dict.get('data')
+    # 接下来持久化该数据
+    return {'task': 'yzwz_persistence', 'args': [args[0], data]}
 
 
 if __name__ == '__main__':
