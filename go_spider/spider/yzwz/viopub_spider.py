@@ -8,7 +8,6 @@
 
 import random
 import time
-import json
 import datetime
 from spider.requestApi.UserAgent import user_agent_list
 import spider.yzwz.config as cnf
@@ -47,7 +46,12 @@ class ViopubLogic:
                         'Referer': 'https://{0}.122.gov.cn/views/notice.html'.format(p_code),
                         'Host': '{0}.122.gov.cn'.format(p_code),
                         })
-        self.api.send_args_get_html(url=url, headers=headers, method='get', isSession='yes', isProxy='yes', isVerify=False)
+        self.api.send_args_get_html(url=url,
+                                    headers=headers,
+                                    method='get',
+                                    isSession='yes',
+                                    isProxy='yes',
+                                    isVerify=False)
 
     def do_check_type(self, p_code):
         # 请求 check_type
@@ -59,7 +63,13 @@ class ViopubLogic:
                         'Origin': deepcopy(cnf.url_home).format(p_code),
                         })
         payloads = {'checktype': cnf.check_type.get('yzwz')}
-        self.api.send_args_get_html(url=url, headers=headers, method='post', payloads=payloads, isSession='yes', isProxy='yes', isVerify=False)
+        self.api.send_args_get_html(url=url,
+                                    headers=headers,
+                                    method='post',
+                                    payloads=payloads,
+                                    isSession='yes',
+                                    isProxy='yes',
+                                    isVerify=False)
 
 
     def download_captcha_ocr(self, p_code):
@@ -67,7 +77,13 @@ class ViopubLogic:
         url = deepcopy(cnf.url_c.format(p_code, int(time.time())))
         headers = cnf.headers_captcha
         headers.update({'Host': '{0}.122.gov.cn'.format(p_code)})
-        captcha = self.api.send_args_get_html(url=url, headers=headers, method='get', isSession='yes', isProxy='yes', isVerify=False, isByte=True)
+        captcha = self.api.send_args_get_html(url=url,
+                                              headers=headers,
+                                              method='get',
+                                              isSession='yes',
+                                              isProxy='yes',
+                                              isVerify=False,
+                                              isByte=True)
         # with open('{}.png'.format(int(time.time())), 'wb') as f:
         with open('ca.png'.format(int(time.time())), 'wb') as f:
             f.write(captcha)
@@ -88,7 +104,14 @@ class ViopubLogic:
         payloads.update({'startTime': (datetime.datetime.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
                          'endTime': (datetime.datetime.today()).strftime('%Y-%m-%d'),
                          'csessionid': ca})
-        html = self.api.send_args_get_html(url=url, headers=headers, method='post', payloads=payloads, isSession='yes', isProxy='yes', isVerify=False, code='utf-8')
+        html = self.api.send_args_get_html(url=url,
+                                           headers=headers,
+                                           method='post',
+                                           payloads=payloads,
+                                           isSession='yes',
+                                           isProxy='yes',
+                                           isVerify=False,
+                                           code='utf-8')
         return html
 
     def download_data_detail(self, p_code, pid):
@@ -103,7 +126,14 @@ class ViopubLogic:
         })
         payloads = cnf.payloads_detail
         payloads.update({'id': pid})
-        html = self.api.send_args_get_html(url=url, headers=headers, method='post', payloads=payloads, isSession='no', isProxy='yes', isVerify=False, code='utf-8')
+        html = self.api.send_args_get_html(url=url,
+                                           headers=headers,
+                                           method='post',
+                                           payloads=payloads,
+                                           isSession='no', 
+                                           isProxy='yes',
+                                           isVerify=False,
+                                           code='utf-8')
         return html
 
     def run(self, prov):

@@ -107,4 +107,6 @@ ENV/
 *.iml
 
 # for my own
-real_config.py
+*/real_config.py
+
+Node/HTTP/real_config.py
